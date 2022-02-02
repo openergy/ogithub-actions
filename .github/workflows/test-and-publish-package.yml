@@ -1,4 +1,4 @@
-name: test-and-publish
+name: test-and-publish-package
 on:
   workflow_call:
 jobs:
