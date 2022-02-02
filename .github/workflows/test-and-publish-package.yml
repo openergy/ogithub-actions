@@ -1,6 +1,9 @@
 name: test-and-publish-package
 on:
   workflow_call:
+    secrets:
+      AZURE_CONDA_CHANNEL_KEY:
+        required: true
 jobs:
   build:
     runs-on: ubuntu-latest
