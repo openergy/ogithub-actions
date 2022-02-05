@@ -172,29 +172,32 @@ jobs:
         run: |
           set -e
 
+          # checkout develop
+          git checkout develop
+          git pull  # does not seem to be up to date (which is quite odd)
+
           # checkout master, merge develop, push master
           git checkout master
+          git pull  # make sure it is up to date
           git merge --ff-only develop
+          git push origin master
 
-          # create version
+          # create and push version
+          echo "Versioning to version ${{ needs.build.outputs.VERSION }}"
           git tag ${{ needs.build.outputs.VERSION }}
+          git push origin ${{ needs.build.outputs.VERSION }}
 
           # checkout develop and merge master
           git checkout develop
-          git pull  # must pull here or push will fail (which is quite odd)
           git merge master
 
-          # add the next version
+          # add and commit the next version to RELEASE.md
           sed -i "0,/^##/s/##/## next\\n\\n##/" RELEASE.md
-
-          # commit and push develop
           git commit RELEASE.md -m "[CI] added ## next to RELEASE.md"
 
-          # push branches and tags
+          # push develop
           git push origin develop
-          git push origin master
-          echo "Versioning to version ${{ needs.build.outputs.VERSION }}"
-          git push origin ${{ needs.build.outputs.VERSION }}
+
         working-directory: ${{ github.workspace }}/repo
 
   conda-upload:
