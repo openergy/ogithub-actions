@@ -67,8 +67,9 @@ jobs:
           activate-environment: ""
 
       - name: "add openergy conda channel if secret was provided"
-        if: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }} != ''
-        run: conda config --system --add channels ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
+        run: |
+          set -e
+          ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }} != '' && conda config --system --add channels ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
 
       - name: "prepare build info"
         run: |
@@ -141,8 +142,9 @@ jobs:
           channels: defaults,conda-forge
 
       - name: "add openergy conda channel if secret was provided"
-        if: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }} != ''
-        run: conda config --system --add channels ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
+        run: |
+          set -e
+          ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }} != '' && conda config --system --add channels ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
 
       - name: "install requirements"
         run: |
