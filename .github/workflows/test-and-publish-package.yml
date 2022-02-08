@@ -54,15 +54,6 @@ jobs:
         run: git add ./${{ steps.set-repository-name.outputs.REPOSITORY_NAME }}/version.py
         working-directory: ${{ github.workspace }}/repo
 
-      - name: "commit to develop"
-        run: |
-          set -e
-          git commit -m "[CI] updated version as ${{ steps.set-version.outputs.VERSION }}" || :
-          # || : => works as try/except:pass (commit may fail in certain cases if code has not changed, \
-          #  but it shouldn't be a problem)
-          git push origin develop
-        working-directory: ${{ github.workspace }}/repo
-
       - name: "install miniconda with conda-build"
         uses: conda-incubator/setup-miniconda@v2
         with:
@@ -95,6 +86,15 @@ jobs:
           name: conda-build
           path: ${{ github.workspace }}/conda-build-to-upload
           retention-days: 1
+
+      - name: "commit to develop"
+        run: |
+          set -e
+          git commit -m "[CI] updated version as ${{ steps.set-version.outputs.VERSION }}" || :
+          # || : => works as try/except:pass (commit may fail in certain cases if code has not changed, \
+          #  but it shouldn't be a problem)
+          git push origin develop
+        working-directory: ${{ github.workspace }}/repo
 
   test:
     runs-on: ubuntu-latest
