@@ -4,6 +4,8 @@ on:
     secrets:
       AZURE_CONDA_CHANNEL_KEY:
         required: true
+      CONDA_CHANNEL_SYSADMIN_URL:
+        required: false
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -69,6 +71,10 @@ jobs:
           auto-activate-base: true
           activate-environment: ""
 
+      - name: "add openergy conda channel if secret was provided"
+        if: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }} != ''
+        run: conda config --system --add channels ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
+
       - name: "prepare build info"
         run: |
           set -e
@@ -129,6 +135,10 @@ jobs:
         with:
           mamba-version: "*"
           channels: defaults,conda-forge
+
+      - name: "add openergy conda channel if secret was provided"
+        if: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }} != ''
+        run: conda config --system --add channels ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
 
       - name: "install requirements"
         run: |
