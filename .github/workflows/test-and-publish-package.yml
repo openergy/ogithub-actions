@@ -69,7 +69,7 @@ jobs:
       - name: "add openergy conda channel if secret was provided"
         run: |
           set -e
-          ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }} != '' && conda config --system --add channels ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
+          [ -z ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }} ] || conda config --system --add channels ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
 
       - name: "prepare build info"
         run: |
@@ -144,7 +144,7 @@ jobs:
       - name: "add openergy conda channel if secret was provided"
         run: |
           set -e
-          ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }} != '' && conda config --system --add channels ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
+          [ -z ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }} ] || conda config --system --add channels ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
 
       - name: "install requirements"
         run: |
