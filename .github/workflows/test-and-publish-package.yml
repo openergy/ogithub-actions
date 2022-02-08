@@ -1,11 +1,15 @@
 name: test-and-publish-package
+
 on:
   workflow_call:
     secrets:
-      AZURE_CONDA_CHANNEL_KEY:
-        required: true
       CONDA_CHANNEL_SYSADMIN_URL:
+        description: "URL containing sysadmin password to use Openergy's private conda channel."
         required: false
+      AZURE_CONDA_CHANNEL_KEY:
+        description: "Azure Storage Account key"
+        required: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
