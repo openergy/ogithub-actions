@@ -14,6 +14,10 @@ on:
       AZURE_CONDA_CHANNEL_KEY:
         description: "Azure Storage Account key"
         required: true
+      ADMIN_TOKEN:
+        description: "Openergy admin github token"
+        required: true
+        type: text
 
 jobs:
   build:
@@ -36,12 +40,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
+          token: ${{ secrets.ADMIN_TOKEN }}  # we want push to be done by Openergy Admin, for branch protection
 
       - name: "configure git"
         run: |
           set -e
-          git config user.name Openergy Admin
-          git config user.email admin@openergy.fr
+          git config --global user.name Openergy Admin
+          git config --global user.email admin@openergy.fr
         working-directory: ${{ github.workspace }}/repo
 
       - name: "prepare conda cache"  # https://github.com/marketplace/actions/setup-miniconda#caching
@@ -120,12 +125,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
+          token: ${{ secrets.ADMIN_TOKEN }}  # we want push to be done by Openergy Admin, for branch protection
 
       - name: "configure git"
         run: |
           set -e
-          git config user.name Openergy Admin
-          git config user.email admin@openergy.fr
+          git config --global user.name Openergy Admin
+          git config --global user.email admin@openergy.fr
         working-directory: ${{ github.workspace }}/repo
 
       - name: "download build"
@@ -189,12 +195,13 @@ jobs:
         with:
           path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
           fetch-depth: 0  # must fetch all or merges will fail
+          token: ${{ secrets.ADMIN_TOKEN }}  # we want push to be done by Openergy Admin, for branch protection
 
       - name: "configure git"
         run: |
           set -e
-          git config user.name Openergy Admin
-          git config user.email admin@openergy.fr
+          git config --global user.name Openergy Admin
+          git config --global user.email admin@openergy.fr
         working-directory: ${{ github.workspace }}/repo
 
       - name: "update branches and tags"
