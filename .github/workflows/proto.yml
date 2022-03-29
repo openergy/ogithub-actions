@@ -1,0 +1,25 @@
+name: proto
+
+on:
+  workflow_call:
+    inputs:
+      INSTALL_EPLUS_920:
+        description: "Should I install Energy Plus 9.2.0 ?"
+        required: false
+        type: boolean
+
+jobs:
+  reusable_workflow_job:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash -l {0}
+        working-directory: ${{ github.workspace }}
+    steps:
+      - name: "install EnergyPlus 9.2.0 if required"
+        if: ${{ inputs.INSTALL_EPLUS_920 }}
+        run: |
+          set -e
+          wget -q https://github.com/NREL/EnergyPlus/releases/download/v9.2.0/EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
+          echo "y\r" | sudo bash ./EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
+          sudo rm ./EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
