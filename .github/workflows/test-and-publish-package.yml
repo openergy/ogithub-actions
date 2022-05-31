@@ -20,6 +20,7 @@ on:
 
 jobs:
   build:
+    if: ${{ ! contains(github.event.commits[0].message, '[openergy admin]') }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -102,9 +103,11 @@ jobs:
           retention-days: 1
 
       - name: "commit to develop"
+        # !! don't change [openergy admin] in message or it will trigger a recursive workflow (see condition at
+        # beginning of workflow)!!
         run: |
           set -e
-          git commit -m "[CI] updated version as ${{ steps.set-version.outputs.VERSION }}" || :
+          git commit -m "[openergy admin] updated version as ${{ steps.set-version.outputs.VERSION }}" || :
           # || : => works as try/except:pass (commit may fail in certain cases if code has not changed, \
           #  but it shouldn't be a problem)
           git push origin develop
@@ -227,8 +230,10 @@ jobs:
           git merge master
 
           # add and commit the next version to RELEASE.md
+          # !! don't change [openergy admin] in message or it will trigger a recursive workflow (see condition at
+          # beginning of workflow)!!
           sed -i "0,/^##/s/##/## next\\n\\n##/" RELEASE.md
-          git commit RELEASE.md -m "[CI] added ## next to RELEASE.md"
+          git commit RELEASE.md -m "[openergy admin] added ## next to RELEASE.md"
 
           # push develop
           git push origin develop
@@ -237,48 +242,48 @@ jobs:
 
   conda-upload:
     needs: [build, test, version]  # we want to make sure that versioning worked before uploading to conda channel
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     defaults:
       run:
         working-directory: ${{ github.workspace }}
     steps:
-      - name: "download build"
-        uses: actions/download-artifact@v2
-        with:
-          name: conda-build
-          path: ${{ github.workspace }}/conda-build
+      - name: "prepare ubuntu"
+        run: |
+          set -e
+          sudo apt-get update && sudo apt-get install -y curl software-properties-common libcurl3-gnutls
 
-      - name: "install and configure rclone"
+      - name: "install blobfuse"
         run: |
           set -e
 
-          # https://rclone.org/install/
-          wget -q https://downloads.rclone.org/rclone-current-linux-amd64.zip
-          unzip rclone-current-linux-amd64.zip
-          cd rclone-*-linux-amd64
+          # https://docs.microsoft.com/en-us/windows-server/administration/Linux-Package-Repository-for-Microsoft-Software#ubuntu
+          curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc
+          sudo apt-add-repository https://packages.microsoft.com/ubuntu/20.04/prod
+          sudo apt-get update
 
-          # https://askubuntu.com/questions/1357549/how-to-install-rclone-in-ubuntu-without-root
+          # https://docs.microsoft.com/en-us/azure/storage/blobs/storage-how-to-mount-container-linux
+          sudo apt-get install -y blobfuse
 
-          # prepare local installation directories
-          mkdir ~/.local
-          mkdir ~/.local/bin
-          mkdir ~/.local/share
-          mkdir ~/.local/share/man
-          mkdir ~/.local/share/man/man1
+      - name: "configure blobfuse"
+        run: |
+          set -e
 
-          # copy rclone files
-          cp rclone ~/.local/bin
-          chmod +x ~/.local/bin/rclone
-          cp rclone.1 ~/.local/share/man/man1/
+          # tmp dir
+          mkdir ${{ github.workspace }}/blobfusetmp -p
 
-          # create conf
-          cat > ~/.rclone.conf <<EOL
-          [condachannel]
-          type = azureblob
-          account = condachannel
-          key = ${{ secrets.AZURE_CONDA_CHANNEL_KEY }}
+          # connection info
+          cat > ${{ github.workspace }}/fuse_connection.cfg <<EOL
+          accountName condachannel
+          accountKey ${{ secrets.AZURE_CONDA_CHANNEL_KEY }}
+          containerName static
 
           EOL
+
+          # local conda-build work directory
+          mkdir /${{ github.workspace }}/conda-build
+
+          # mount directory
+          blobfuse /${{ github.workspace }}/conda-build --tmp-path=${{ github.workspace }}/blobfusetmp --config-file=/${{ github.workspace }}/fuse_connection.cfg -o attr_timeout=240 -o entry_timeout=240 -o negative_timeout=120
 
       - name: "install miniconda with conda-build"
         uses: conda-incubator/setup-miniconda@v2
@@ -288,9 +293,5 @@ jobs:
           auto-activate-base: true
           activate-environment: ""
 
-      - name: "download packages, update index and upload to channel"
-        run: |
-          set -e
-          rclone copy condachannel:static conda-build
-          conda index conda-build
-          rclone copy conda-build condachannel:static
+      - name: "update index"
+        run: conda index conda-build
