@@ -17,7 +17,6 @@ on:
       ADMIN_GITHUB_TOKEN:
         description: "Openergy admin github token"
         required: true
-        type: text
 
 jobs:
   build:
