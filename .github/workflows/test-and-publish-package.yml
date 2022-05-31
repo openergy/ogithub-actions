@@ -269,7 +269,10 @@ jobs:
           set -e
 
           # tmp dir
-          mkdir ${{ github.workspace }}/blobfusetmp -p
+          #mkdir ${{ github.workspace }}/blobfusetmp -p
+          sudo mkdir ${{ github.workspace }}/ramdisk
+          sudo mount -t tmpfs -o size=3g tmpfs ${{ github.workspace }}/ramdisk
+          sudo mkdir ${{ github.workspace }}/ramdisk/blobfusetmp
 
           # connection info
           cat > ${{ github.workspace }}/fuse_connection.cfg <<EOL
@@ -283,7 +286,7 @@ jobs:
           mkdir /${{ github.workspace }}/conda-build
 
           # mount directory
-          blobfuse /${{ github.workspace }}/conda-build --tmp-path=${{ github.workspace }}/blobfusetmp --config-file=/${{ github.workspace }}/fuse_connection.cfg -o attr_timeout=240 -o entry_timeout=240 -o negative_timeout=120
+          blobfuse /${{ github.workspace }}/conda-build --tmp-path=${{ github.workspace }}/ramdisk/blobfusetmp --config-file=/${{ github.workspace }}/fuse_connection.cfg -o attr_timeout=240 -o entry_timeout=240 -o negative_timeout=120
 
       - name: "install miniconda with conda-build"
         uses: conda-incubator/setup-miniconda@v2
@@ -292,6 +295,12 @@ jobs:
           conda-build-version: "*"
           auto-activate-base: true
           activate-environment: ""
+
+      - name: "add new version build"
+        uses: actions/download-artifact@v2
+        with:
+          name: conda-build
+          path: ${{ github.workspace }}/conda-build
 
       - name: "update index"
         run: conda index conda-build
