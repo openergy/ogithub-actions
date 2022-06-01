@@ -17,50 +17,52 @@ inputs:
     required: false
 # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
 # https://github.com/marketplace/actions/setup-miniconda#important
-steps:
-  - name: "checkout repo"  # automatically on develop
-    uses: actions/checkout@v2
-    with:
-      path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
-      fetch-depth: 0  # must fetch all or merges will fail
-      token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
+runs:
+  using: composite
+  steps:
+    - name: checkout repo  # automatically on develop
+      uses: actions/checkout@v2
+      with:
+        path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
+        fetch-depth: 0  # must fetch all or merges will fail
+        token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
 
-  - name: "configure git"
-    shell: bash -l {0}
-    working-directory: ${{ github.workspace }}/repo
-    run: |
-      set -e
-      git config --global user.name Openergy Admin
-      git config --global user.email admin@openergy.fr
+    - name: configure git
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo
+      run: |
+        set -e
+        git config --global user.name Openergy Admin
+        git config --global user.email admin@openergy.fr
 
-  - name: "update branches and tags"
-    shell: bash -l {0}
-    working-directory: ${{ github.workspace }}/repo
-    run: |
-      set -e
+    - name: update branches and tags
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo
+      run: |
+        set -e
 
-      # checkout develop
-      git checkout develop
-      git pull  # does not seem to be up to date (which is quite odd)
+        # checkout develop
+        git checkout develop
+        git pull  # does not seem to be up to date (which is quite odd)
 
-      # checkout master, merge develop, push master
-      git checkout master
-      git pull  # make sure it is up to date
-      git merge --ff-only develop
-      git push origin master
+        # checkout master, merge develop, push master
+        git checkout master
+        git pull  # make sure it is up to date
+        git merge --ff-only develop
+        git push origin master
 
-      # create and push version
-      echo "Versioning to version ${{ needs.build.outputs.VERSION }}"
-      git tag ${{ needs.build.outputs.VERSION }}
-      git push origin ${{ needs.build.outputs.VERSION }}
+        # create and push version
+        echo "Versioning to version ${{ needs.build.outputs.VERSION }}"
+        git tag ${{ needs.build.outputs.VERSION }}
+        git push origin ${{ needs.build.outputs.VERSION }}
 
-      # checkout develop and merge master
-      git checkout develop
-      git merge master
+        # checkout develop and merge master
+        git checkout develop
+        git merge master
 
-      # add and commit the next version to RELEASE.md
-      sed -i "0,/^##/s/##/## next\\n\\n##/" RELEASE.md
-      git commit RELEASE.md -m "[CI] added ## next to RELEASE.md"
+        # add and commit the next version to RELEASE.md
+        sed -i "0,/^##/s/##/## next\\n\\n##/" RELEASE.md
+        git commit RELEASE.md -m "[CI] added ## next to RELEASE.md"
 
-      # push develop
-      git push origin develop
+        # push develop
+        git push origin develop
