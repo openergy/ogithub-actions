@@ -3,8 +3,9 @@ description: "build is uploaded to conda-build artifact"
 inputs:
   BUILD_ARTIFACT_NAME:
     description: "name of the artifact in which build will be stored"
+    required: false
     default: "conda-build"
-secrets:
+  # secrets
   ADMIN_GITHUB_TOKEN:
     description: "Openergy admin github token"
     required: true
