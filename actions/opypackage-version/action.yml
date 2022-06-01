@@ -52,9 +52,9 @@ runs:
         git push origin master
 
         # create and push version
-        echo "Versioning to version ${{ needs.build.outputs.VERSION }}"
-        git tag ${{ needs.build.outputs.VERSION }}
-        git push origin ${{ needs.build.outputs.VERSION }}
+        echo "Versioning to version ${{ inputs.build-version }}"
+        git tag ${{ inputs.build-version }}
+        git push origin ${{ inputs.build-version }}
 
         # checkout develop and merge master
         git checkout develop
