@@ -1,12 +1,12 @@
 name: "Build Openergy python package"
 description: "build is uploaded to conda-build artifact"
 inputs:
-  BUILD_ARTIFACT_NAME:
+  build-artifact-name:
     description: "name of the artifact in which build will be stored"
     required: false
     default: "conda-build"
   # secrets
-  ADMIN_GITHUB_TOKEN:
+  admin-github-token:
     description: "Openergy admin github token"
     required: true
 outputs:
@@ -20,7 +20,7 @@ runs:
       uses: actions/checkout@v3
       with:
         path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
-        token: ${{ secrets.ADMIN_GITHUB_TOKEN }}  # we want push to be done by Openergy Admin, for branch protection
+        token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
 
     - name: "configure git"
       shell: bash -l {0}
@@ -87,7 +87,7 @@ runs:
     - name: "upload build"
       uses: actions/upload-artifact@v2
       with:
-        name: conda-build
+        name: ${{ inputs.build-artifact-name }}
         path: ${{ github.workspace }}/conda-build-to-upload
         retention-days: 1
 
