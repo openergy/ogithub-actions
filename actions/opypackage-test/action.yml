@@ -40,7 +40,7 @@ runs:
     - name: "download build"
       uses: actions/download-artifact@v2
       with:
-        name: conda-build
+        name: ${{ inputs.build-artifact-name }}
         path: ${{ github.workspace }}/conda-build
 
     - name: "prepare miniconda cache"
@@ -55,17 +55,17 @@ runs:
         mamba-version: "*"
         channels: defaults,conda-forge
 
-    - name: "add openergy conda channel if secret was provided"
+    - name: "add openergy conda channel if input was provided"
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
       run: |
         set -e
-        [ -z ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }} ] || conda config --system --add channels ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
+        [ -z ${{ inputs.conda-channel-sysadmin-url }} ] || conda config --system --add channels ${{ inputs.conda-channel-sysadmin-url }}
 
     - name: "install EnergyPlus 9.2.0 if required"
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
-      if: ${{ inputs.INSTALL_EPLUS_920 }}
+      if: ${{ inputs.install-eplus-920 }}
       run: |
         set -e
         wget -q https://github.com/NREL/EnergyPlus/releases/download/v9.2.0/EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
@@ -78,7 +78,7 @@ runs:
       run: |
         set -e
         # package requirements
-        mamba install -q -c ${{ github.workspace }}/conda-build ${{ needs.build.outputs.REPOSITORY_NAME }}=${{ needs.build.outputs.VERSION }}
+        mamba install -q -c ${{ github.workspace }}/conda-build ${{ needs.build.outputs.REPOSITORY_NAME }}=${{ inputs.build-version }}
         # tests requirements
         mamba install pytest pytest-cov
 

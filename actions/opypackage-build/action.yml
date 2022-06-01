@@ -13,9 +13,9 @@ inputs:
     description: openergy conda channel (if openergy packages are needed for build)
     required: false
 outputs:
-  version:
+  build-version:
     description: version that is extracted from RELEASE.md
-    value: ${{ steps.set-version.outputs.VERSION }}
+    value: ${{ steps.set-version.outputs.build-version }}
 # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
 # https://github.com/marketplace/actions/setup-miniconda#important
 runs:
@@ -45,7 +45,7 @@ runs:
       id: set-version
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo
-      run: echo "::set-output name=version::$(sed -n '0,/^##/s/## //p' RELEASE.md)"
+      run: echo "::set-output name=build-version::$(sed -n '0,/^##/s/## //p' RELEASE.md)"
 
     - name: prepare version.py
       shell: bash -l {0}
@@ -65,7 +65,7 @@ runs:
         auto-activate-base: true
         activate-environment: ""
 
-    - name: add openergy conda channel if secret was provided
+    - name: add openergy conda channel if input was provided
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
       run: |
