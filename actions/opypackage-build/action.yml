@@ -70,7 +70,7 @@ runs:
       working-directory: ${{ github.workspace }}
       run: |
         set -e
-        [ -z ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }} ] || conda config --system --add channels ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
+        [ -z ${{ inputs.conda-channel-sysadmin-url }} ] || conda config --system --add channels ${{ inputs.conda-channel-sysadmin-url }}
 
     - name: prepare build info
       shell: bash -l {0}
