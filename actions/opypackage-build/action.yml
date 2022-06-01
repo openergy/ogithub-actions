@@ -9,6 +9,9 @@ inputs:
   admin-github-token:
     description: Openergy admin github token
     required: true
+  conda-channel-sysadmin-url:
+    description: openergy conda channel (if openergy packages are needed for build)
+    required: false
 outputs:
   version:
     description: version that is extracted from RELEASE.md
