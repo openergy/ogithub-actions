@@ -1,28 +1,30 @@
-name: "Build Openergy python package"
-description: "build is uploaded to conda-build artifact"
+name: Build Openergy python package
+description: build is uploaded to conda-build artifact
 inputs:
   build-artifact-name:
-    description: "name of the artifact in which build will be stored"
+    description: name of the artifact in which build will be stored
     required: false
-    default: "conda-build"
+    default: conda-build
   # secrets
   admin-github-token:
-    description: "Openergy admin github token"
+    description: Openergy admin github token
     required: true
 outputs:
-  VERSION: ${{ steps.set-version.outputs.VERSION }}
+  version:
+    description: version that is extracted from RELEASE.md
+    value: ${{ steps.set-version.outputs.VERSION }}
 # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
 # https://github.com/marketplace/actions/setup-miniconda#important
 runs:
-  using: "composite"
+  using: composite
   steps:
-    - name: "checkout repo" # automatically on develop
+    - name: checkout repo # automatically on develop
       uses: actions/checkout@v3
       with:
         path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
         token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
 
-    - name: "configure git"
+    - name: configure git
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo
       run: |
@@ -30,29 +32,29 @@ runs:
         git config --global user.name Openergy Admin
         git config --global user.email admin@openergy.fr
 
-    - name: "prepare conda cache"  # https://github.com/marketplace/actions/setup-miniconda#caching
+    - name: prepare conda cache  # https://github.com/marketplace/actions/setup-miniconda#caching
       uses: actions/cache@v2
       with:
         path: ~/conda_pkgs_dir
         key: ${{ runner.os }}-${{ hashFiles('${{ github.workspace }}/repo/requirements.txt') }}
 
-    - name: "retrieve version in RELEASE.md ('next' or version number)"
+    - name: retrieve version in RELEASE.md ('next' or version number)
       id: set-version
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo
       run: echo "::set-output name=VERSION::$(sed -n '0,/^##/s/## //p' RELEASE.md)"
 
-    - name: "prepare version.py"
+    - name: prepare version.py
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo
       run: printf 'version = "${{ steps.set-version.outputs.VERSION }}"\n' > ./${{ github.event.repository.name }}/version.py
 
-    - name: "add version"
+    - name: add version
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo
       run: git add ./${{ github.event.repository.name }}/version.py
 
-    - name: "install miniconda with conda-build"
+    - name: install miniconda with conda-build
       uses: conda-incubator/setup-miniconda@v2
       with:
         channels: conda-forge
@@ -60,14 +62,14 @@ runs:
         auto-activate-base: true
         activate-environment: ""
 
-    - name: "add openergy conda channel if secret was provided"
+    - name: add openergy conda channel if secret was provided
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
       run: |
         set -e
         [ -z ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }} ] || conda config --system --add channels ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
 
-    - name: "prepare build info"
+    - name: prepare build info
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo
       run: |
@@ -79,19 +81,19 @@ runs:
         # create meta
         python ${{ github.workspace }}/create_meta.py conda-build ${{ github.event.repository.name }} false
 
-    - name: "build"
+    - name: build
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo/conda-build
       run: conda-build . --croot ${{ github.workspace }}/conda-build-to-upload
 
-    - name: "upload build"
+    - name: upload build
       uses: actions/upload-artifact@v2
       with:
         name: ${{ inputs.build-artifact-name }}
         path: ${{ github.workspace }}/conda-build-to-upload
         retention-days: 1
 
-    - name: "commit to develop"
+    - name: commit to develop
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo
       run: |
