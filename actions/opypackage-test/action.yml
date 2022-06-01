@@ -1,0 +1,91 @@
+name: Test Openergy python package
+description: conda-build artifact is used as package to test
+inputs:
+  build-version:
+    description: version that was extracted from RELEASE.md
+    required: true
+  build-artifact-name:
+    description: name of the artifact in which package build is stored
+    required: false
+    default: conda-build
+  install-eplus-920:
+    description: Should I install Energy Plus 9.2.0 ?
+    required: false
+  # secrets
+  admin-github-token:
+    description: Openergy admin github token
+    required: true
+  conda-channel-sysadmin-url:
+    description: openergy conda channel (if openergy packages are needed for build)
+    required: false
+# https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
+# https://github.com/marketplace/actions/setup-miniconda#important
+runs:
+  using: composite
+  steps:
+    - name: "checkout repo"  # (automatically on develop)
+      uses: actions/checkout@v2
+      with:
+        path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
+        token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
+
+    - name: "configure git"
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo
+      run: |
+        set -e
+        git config --global user.name Openergy Admin
+        git config --global user.email admin@openergy.fr
+
+    - name: "download build"
+      uses: actions/download-artifact@v2
+      with:
+        name: conda-build
+        path: ${{ github.workspace }}/conda-build
+
+    - name: "prepare miniconda cache"
+      uses: actions/cache@v2
+      with:
+        path: ~/conda_pkgs_dir
+        key: ${{ runner.os }}-${{ hashFiles('${{ github.workspace }}/conda-build/**') }}
+
+    - name: "install miniconda"
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        mamba-version: "*"
+        channels: defaults,conda-forge
+
+    - name: "add openergy conda channel if secret was provided"
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: |
+        set -e
+        [ -z ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }} ] || conda config --system --add channels ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
+
+    - name: "install EnergyPlus 9.2.0 if required"
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      if: ${{ inputs.INSTALL_EPLUS_920 }}
+      run: |
+        set -e
+        wget -q https://github.com/NREL/EnergyPlus/releases/download/v9.2.0/EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
+        echo "y\r" | sudo bash ./EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
+        sudo rm ./EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
+
+    - name: "install requirements"
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: |
+        set -e
+        # package requirements
+        mamba install -q -c ${{ github.workspace }}/conda-build ${{ needs.build.outputs.REPOSITORY_NAME }}=${{ needs.build.outputs.VERSION }}
+        # tests requirements
+        mamba install pytest pytest-cov
+
+    - name: "copy and run tests"
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: |
+        set -e
+        cp -r ${{ github.workspace }}/repo/tests ${{ github.workspace }}
+        pytest tests  # fixme: manage coverage
