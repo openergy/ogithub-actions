@@ -104,7 +104,7 @@ jobs:
       - name: "commit to develop"
         run: |
           set -e
-          git commit -m "[CI] updated version as ${{ steps.set-version.outputs.VERSION }}" || :
+          git commit -m "[CI] updated version in version.py as ${{ steps.set-version.outputs.VERSION }}" || :
           # || : => works as try/except:pass (commit may fail in certain cases if code has not changed, \
           #  but it shouldn't be a problem)
           git push origin develop
