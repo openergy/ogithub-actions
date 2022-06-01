@@ -78,7 +78,7 @@ runs:
       run: |
         set -e
         # package requirements
-        mamba install -q -c ${{ github.workspace }}/conda-build ${{ needs.build.outputs.REPOSITORY_NAME }}=${{ inputs.build-version }}
+        mamba install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
         # tests requirements
         mamba install pytest pytest-cov
 
