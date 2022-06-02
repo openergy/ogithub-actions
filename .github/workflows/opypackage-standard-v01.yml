@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: build package
         id: build-package
-        uses: openergy/ogithub-actions/actions/opypackage-build-v01@develop
+        uses: openergy/ogithub-actions/actions/opypackage-build-v01@master
         with:
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: test package
-        uses: openergy/ogithub-actions/actions/opypackage-test-v01@develop
+        uses: openergy/ogithub-actions/actions/opypackage-test-v01@master
         with:
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           build-version: ${{ needs.build.outputs.build-version }}
@@ -52,7 +52,7 @@ jobs:
     if: needs.build.outputs.build-version != 'next'
     steps:
       - name: version repo
-        uses: openergy/ogithub-actions/actions/opypackage-version-v01@develop
+        uses: openergy/ogithub-actions/actions/opypackage-version-v01@master
         with:
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           build-version: ${{ needs.build.outputs.build-version }}
@@ -63,6 +63,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: publish package
-        uses: openergy/ogithub-actions/actions/opypackage-conda-publish-v01@develop
+        uses: openergy/ogithub-actions/actions/opypackage-conda-publish-v01@master
         with:
           azure-conda-channel-key: ${{ secrets.AZURE_CONDA_CHANNEL_KEY }}
