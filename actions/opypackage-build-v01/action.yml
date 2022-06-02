@@ -85,7 +85,7 @@ runs:
         mkdir conda-build
         # download create_meta script
         # todo: change GL-refactor to master
-        wget https://raw.githubusercontent.com/openergy/ogithub-actions/GL-refactor/actions/opypackage-build/create_meta.py -P ${{ github.workspace }}
+        wget https://raw.githubusercontent.com/openergy/ogithub-actions/develop/actions/opypackage-build-v01/create_meta.py -P ${{ github.workspace }}
         # create meta
         python ${{ github.workspace }}/create_meta.py conda-build ${{ github.event.repository.name }} false
 
