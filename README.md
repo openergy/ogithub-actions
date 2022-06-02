@@ -1,2 +1,2 @@
-# github-actions-workflows
-Openergy's Github Actions Workflows
+# ogithub-actions
+Openergy's Github Actions libraries
