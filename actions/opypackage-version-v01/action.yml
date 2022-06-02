@@ -67,7 +67,7 @@ runs:
 
         # add and commit the next version to RELEASE.md
         sed -i "0,/^##/s/##/## next\\n\\n##/" RELEASE.md
-        git commit RELEASE.md -m "[CI] added ## next to RELEASE.md"
+        git commit RELEASE.md -m "[skip ci] added ## next to RELEASE.md"
 
         # push develop
         git push origin develop
