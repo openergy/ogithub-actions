@@ -1,17 +1,22 @@
 name: Build Openergy python package
 description: build is uploaded to conda-build artifact
 inputs:
+  # mandatory
+  admin-github-token:
+    description: Openergy admin github token
+    required: true
+
+  # optional
+  conda-channel-sysadmin-url:
+    description: openergy conda channel (if openergy packages are needed for build)
+    required: false
+
+  # config
   build-artifact-name:
     description: name of the artifact in which build will be stored
     required: false
     default: conda-build
-  # secrets
-  admin-github-token:
-    description: Openergy admin github token
-    required: true
-  conda-channel-sysadmin-url:
-    description: openergy conda channel (if openergy packages are needed for build)
-    required: false
+
 outputs:
   build-version:
     description: version that is extracted from RELEASE.md

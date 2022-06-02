@@ -1,14 +1,16 @@
 name: Publish conda build on Openergy conda channel
 description: build is uploaded from conda-build artifact
 inputs:
+  # mandatory
+  azure-conda-channel-key:
+    description: Azure conda channel key
+    required: true
+
+  # config
   build-artifact-name:
     description: name of the artifact in which build will be stored
     required: false
     default: conda-build
-  # secrets
-  azure-conda-channel-key:
-    description: Azure conda channel key
-    required: true
 
 # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
 # https://github.com/marketplace/actions/setup-miniconda#important
