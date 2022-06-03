@@ -34,14 +34,6 @@ runs:
         path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
         token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
 
-    - name: configure git
-      shell: bash -l {0}
-      working-directory: ${{ github.workspace }}/repo
-      run: |
-        set -e
-        git config --global user.name Openergy Admin
-        git config --global user.email admin@openergy.fr
-
     - name: download build
       uses: actions/download-artifact@v2
       with:
