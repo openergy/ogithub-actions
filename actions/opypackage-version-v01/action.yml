@@ -9,11 +9,6 @@ inputs:
     description: version that was extracted from RELEASE.md
     required: true
 
-  # optional
-  conda-channel-sysadmin-url:
-    description: openergy conda channel (if openergy packages are needed for build)
-    required: false
-
   # config
   build-artifact-name:
     description: name of the artifact in which package build is stored
@@ -49,6 +44,11 @@ runs:
         # checkout develop
         git checkout develop
         git pull  # does not seem to be up to date (which is quite odd)
+
+        # add update version.py
+        git commit -m "[skip ci] updated version in version.py as ${{ steps.set-version.outputs.VERSION }}" || :
+        # || : => works as try/except:pass (commit may fail in certain cases if code has not changed, \
+        #  but it shouldn't be a problem)
 
         # checkout master, merge develop, push master
         git checkout master

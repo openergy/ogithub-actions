@@ -32,14 +32,6 @@ runs:
         path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
         token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
 
-    - name: configure git
-      shell: bash -l {0}
-      working-directory: ${{ github.workspace }}/repo
-      run: |
-        set -e
-        git config --global user.name Openergy Admin
-        git config --global user.email admin@openergy.fr
-
     - name: prepare conda cache  # https://github.com/marketplace/actions/setup-miniconda#caching
       uses: actions/cache@v2
       with:
@@ -99,13 +91,3 @@ runs:
         name: ${{ inputs.build-artifact-name }}
         path: ${{ github.workspace }}/conda-build-to-upload
         retention-days: 1
-
-    - name: commit to develop
-      shell: bash -l {0}
-      working-directory: ${{ github.workspace }}/repo
-      run: |
-        set -e
-        git commit -m "[skip ci] updated version in version.py as ${{ steps.set-version.outputs.VERSION }}" || :
-        # || : => works as try/except:pass (commit may fail in certain cases if code has not changed, \
-        #  but it shouldn't be a problem)
-        git push origin develop
