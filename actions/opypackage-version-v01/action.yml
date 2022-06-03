@@ -9,6 +9,12 @@ inputs:
     description: version that was extracted from RELEASE.md
     required: true
 
+  # optional
+  package-dir-name:
+    description: name of the package in which is version.py
+    required: false
+    default: ${{ github.event.repository.name }}
+
   # config
   build-artifact-name:
     description: name of the artifact in which package build is stored
@@ -46,7 +52,7 @@ runs:
         git pull  # does not seem to be up to date (which is quite odd)
 
         # update version.py
-        printf 'version = "${{ inputs.build-version }}"\n' > ./${{ github.event.repository.name }}/version.py
+        printf 'version = "${{ inputs.build-version }}"\n' > ./${{ inputs.package-dir-name }}/version.py
         git commit ./${{ github.event.repository.name }}/version.py -m "[skip ci] updated version in version.py as ${{ steps.set-version.outputs.VERSION }}" || :
         # || : => works as try/except:pass (commit may fail in certain cases if code has not changed, \
         #  but it shouldn't be a problem)
