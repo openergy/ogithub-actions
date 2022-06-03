@@ -44,16 +44,6 @@ runs:
       working-directory: ${{ github.workspace }}/repo
       run: echo "::set-output name=build-version::$(sed -n '0,/^##/s/## //p' RELEASE.md)"
 
-    - name: prepare version.py
-      shell: bash -l {0}
-      working-directory: ${{ github.workspace }}/repo
-      run: printf 'version = "${{ steps.set-version.outputs.VERSION }}"\n' > ./${{ github.event.repository.name }}/version.py
-
-    - name: add version
-      shell: bash -l {0}
-      working-directory: ${{ github.workspace }}/repo
-      run: git add ./${{ github.event.repository.name }}/version.py
-
     - name: install miniconda with conda-build
       uses: conda-incubator/setup-miniconda@v2
       with:
