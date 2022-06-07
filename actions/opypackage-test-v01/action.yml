@@ -13,6 +13,9 @@ inputs:
   conda-channel-sysadmin-url:
     description: openergy conda channel (if openergy packages are needed for build)
     required: false
+  python-version:
+    description: Specific python version to install ?
+    required: false
   install-eplus-920:
     description: Should I install Energy Plus 9.2.0 ?
     required: false
@@ -51,6 +54,7 @@ runs:
       with:
         mamba-version: "*"
         channels: defaults,conda-forge
+        python-version: ${{ inputs.python-version }}
 
     - name: add openergy conda channel if input was provided
       shell: bash -l {0}

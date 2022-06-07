@@ -11,6 +11,10 @@ inputs:
     description: openergy conda channel (if openergy packages are needed for build)
     required: false
 
+  python-version:
+    description: Specific python version to install ?
+    required: false
+
   # config
   build-artifact-name:
     description: name of the artifact in which build will be stored
@@ -51,6 +55,7 @@ runs:
         conda-build-version: "*"
         auto-activate-base: true
         activate-environment: ""
+        python-version: ${{ inputs.python-version }}
 
     - name: add openergy conda channel if input was provided
       shell: bash -l {0}

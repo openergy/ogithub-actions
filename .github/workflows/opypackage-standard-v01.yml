@@ -3,22 +3,30 @@ name: test-and-publish-package
 on:
   workflow_call:
     inputs:
+      # optional
       install-eplus-920:
-        description: "Should I install Energy Plus 9.2.0 ?"
+        description: Should I install Energy Plus 9.2.0 ?
         required: false
         type: boolean
+
+      # optional
+      python-version:
+        description: Specific python version to install ?
+        required: false
+        type: string
+
     secrets:
       # mandatory
       ADMIN_GITHUB_TOKEN:
-        description: "Openergy admin github token"
+        description: Openergy admin github token
         required: true
       AZURE_CONDA_CHANNEL_KEY:
-        description: "Azure Storage Account key"
+        description: Azure Storage Account key
         required: true
 
       # optional
       CONDA_CHANNEL_SYSADMIN_URL:
-        description: "URL containing sysadmin password to use Openergy's private conda channel."
+        description: URL containing sysadmin password to use Openergy's private conda channel.
         required: false
 
 jobs:
@@ -31,6 +39,7 @@ jobs:
         id: build-package
         uses: openergy/ogithub-actions/actions/opypackage-build-v01@master
         with:
+          python-version: ${{ inputs.python-version }}
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
 
