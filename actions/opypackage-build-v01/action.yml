@@ -76,9 +76,6 @@ runs:
         # create environment
         conda create -n openergy --file requirements.txt
 
-        # activate
-        conda activate openergy
-
     - name: prepare build info
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo
@@ -95,6 +92,7 @@ runs:
       working-directory: ${{ github.workspace }}/repo/conda-build
       run: |
         set -e
+        conda activate openergy
         conda env list
         conda-build . --croot ${{ github.workspace }}/conda-build-to-upload
 
