@@ -80,7 +80,7 @@ runs:
       run: |
         - set -e
         # specify python version if relevant
-        [ -z ${{ inputs.python-version }} ] || echo "python=$${{ inputs.python-version }}" >> requirements.txt
+        [ -z ${{ inputs.python-version }} ] || echo "python=${{ inputs.python-version }}" >> requirements.txt
 
         # tests requirements
         echo "pytest" >> requirements.txt
