@@ -93,7 +93,10 @@ runs:
     - name: build
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo/conda-build
-      run: conda-build . --croot ${{ github.workspace }}/conda-build-to-upload
+      run: |
+        set -e
+        conda env list
+        conda-build . --croot ${{ github.workspace }}/conda-build-to-upload
 
     - name: upload build
       uses: actions/upload-artifact@v2

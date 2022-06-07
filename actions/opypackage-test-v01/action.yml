@@ -87,7 +87,7 @@ runs:
         echo "pytest-cov" >> requirements.txt
 
         # create environment
-        mamba crate -n openergy --file requirements.txt
+        mamba create -n openergy --file requirements.txt
 
         # activate
         conda activate openergy
