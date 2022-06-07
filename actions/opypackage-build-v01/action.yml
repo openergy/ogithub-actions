@@ -54,7 +54,7 @@ runs:
         channels: conda-forge
         conda-build-version: "*"
         auto-activate-base: true
-        activate-environment: ""
+        activate-environment: true
         python-version: ${{ inputs.python-version }}
 
     - name: add openergy conda channel if input was provided
