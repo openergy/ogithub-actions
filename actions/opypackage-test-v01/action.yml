@@ -13,8 +13,8 @@ inputs:
   conda-channel-sysadmin-url:
     description: openergy conda channel (if openergy packages are needed for build)
     required: false
-  python-version:
-    description: Specific python version to install ?
+  python-requirement:
+    description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
     required: false
   install-eplus-920:
     description: Should I install Energy Plus 9.2.0 ?
@@ -53,7 +53,7 @@ runs:
       uses: conda-incubator/setup-miniconda@v2
       with:
         mamba-version: "*"
-        channels: defaults,conda-forge
+        channels: conda-forge
         auto-activate-base: true
         activate-environment: ""
 
@@ -80,7 +80,7 @@ runs:
       run: |
         - set -e
         # specify python version if relevant
-        [ -z ${{ inputs.python-version }} ] || echo "python=${{ inputs.python-version }}" >> requirements.txt
+        [ -z ${{ inputs.python-requirement }} ] || echo "python${{ inputs.python-requirement }}" >> requirements.txt
 
         # tests requirements
         echo "pytest" >> requirements.txt

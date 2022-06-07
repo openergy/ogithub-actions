@@ -11,8 +11,8 @@ inputs:
     description: openergy conda channel (if openergy packages are needed for build)
     required: false
 
-  python-version:
-    description: Specific python version to install ?
+  python-requirement:
+    description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
     required: false
 
   # config
@@ -69,7 +69,7 @@ runs:
       run: |
         set -e
         # specify python version if relevant
-        [ -z ${{ inputs.python-version }} ] || echo "python=${{ inputs.python-version }}" >> requirements.txt
+        [ -z ${{ inputs.python-requirement }} ] || echo "python${{ inputs.python-requirement }}" >> requirements.txt
 
         # ask for conda build
         echo "conda-build" >> requirements.txt
@@ -84,10 +84,6 @@ runs:
         set -e
         # activate
         conda activate openergy
-
-        # log (for debug)
-        conda env list
-        conda config --show channels
 
         # prepare directory
         mkdir conda-build
@@ -105,6 +101,10 @@ runs:
         set -e
         # activate
         conda activate openergy
+
+        # log (for debug)
+        conda env list
+        conda config --show channels
 
         # build
         conda-build . --croot ${{ github.workspace }}/conda-build-to-upload

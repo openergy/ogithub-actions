@@ -10,8 +10,8 @@ on:
         type: boolean
 
       # optional
-      python-version:
-        description: Specific python version to install ?
+      python-requirement:
+        description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
         required: false
         type: string
 
@@ -39,7 +39,7 @@ jobs:
         id: build-package
         uses: openergy/ogithub-actions/actions/opypackage-build-v01@master
         with:
-          python-version: ${{ inputs.python-version }}
+          python-requirement: ${{ inputs.python-requirement }}
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
 
@@ -51,6 +51,7 @@ jobs:
         uses: openergy/ogithub-actions/actions/opypackage-test-v01@master
         with:
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
+          python-requirement: ${{ inputs.python-requirement }}
           build-version: ${{ needs.build.outputs.build-version }}
           conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
           install-eplus-920: ${{ inputs.install-eplus-920 }}
