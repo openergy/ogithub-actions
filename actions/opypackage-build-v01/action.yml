@@ -64,7 +64,7 @@ runs:
 
     - name: create environment
       shell: bash -l {0}
-      working-directory:  ${{ github.workspace }}
+      working-directory:  ${{ github.workspace }}/repo
       run: |
         set -e
         # specify python version if relevant
@@ -81,9 +81,19 @@ runs:
       working-directory: ${{ github.workspace }}/repo
       run: |
         set -e
+        # activate
+        conda activate openergy
+
+        # log (for debug)
+        conda env list
+        conda config --show channels
+
+        # prepare directory
         mkdir conda-build
+
         # download create_meta script
         wget https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-build-v01/create_meta.py -P ${{ github.workspace }}
+
         # create meta
         python ${{ github.workspace }}/create_meta.py conda-build ${{ github.event.repository.name }} false
 
@@ -92,8 +102,10 @@ runs:
       working-directory: ${{ github.workspace }}/repo/conda-build
       run: |
         set -e
+        # activate
         conda activate openergy
-        conda env list
+
+        # build
         conda-build . --croot ${{ github.workspace }}/conda-build-to-upload
 
     - name: upload build

@@ -89,18 +89,19 @@ runs:
         # create environment
         mamba create -n openergy --file requirements.txt
 
-        # activate
-        conda activate openergy
-
     - name: install requirements
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
-      run: mamba install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
+      run: |
+        set -e
+        conda activate openergy
+        mamba install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
 
     - name: copy and run tests
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
       run: |
         set -e
+        conda activate openergy
         cp -r ${{ github.workspace }}/repo/tests ${{ github.workspace }}
         pytest tests  # fixme: manage coverage
