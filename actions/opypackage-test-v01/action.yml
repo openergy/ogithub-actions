@@ -55,7 +55,6 @@ runs:
         mamba-version: "*"
         channels: defaults,conda-forge
         python-version: ${{ inputs.python-version }}
-        activate-environment: test  # default environment, but can't leave empty if python-version is provided
 
     - name: add openergy conda channel if input was provided
       shell: bash -l {0}

@@ -52,9 +52,7 @@ runs:
       uses: conda-incubator/setup-miniconda@v2
       with:
         channels: conda-forge
-        conda-build-version: "*"
         python-version: ${{ inputs.python-version }}
-        activate-environment: test  # default environment, but can't leave empty if python-version is provided
 
     - name: add openergy conda channel if input was provided
       shell: bash -l {0}
@@ -62,6 +60,11 @@ runs:
       run: |
         set -e
         [ -z ${{ inputs.conda-channel-sysadmin-url }} ] || conda config --system --add channels ${{ inputs.conda-channel-sysadmin-url }}
+
+    - name: install conda build
+      shell: bash -l {0}
+      working-directory:  ${{ github.workspace }}
+      run: conda install conda-build
 
     - name: prepare build info
       shell: bash -l {0}
