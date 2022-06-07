@@ -89,7 +89,7 @@ runs:
         # create environment
         mamba create -n openergy --file requirements.txt
 
-    - name: install requirements
+    - name: install package
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
       run: |

@@ -65,7 +65,7 @@ runs:
 
     - name: create environment
       shell: bash -l {0}
-      working-directory:  ${{ github.workspace }}/repo
+      working-directory:  ${{ github.workspace }}
       run: |
         set -e
         # specify python version if relevant
