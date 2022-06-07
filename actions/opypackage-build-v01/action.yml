@@ -51,7 +51,6 @@ runs:
     - name: install miniconda
       uses: conda-incubator/setup-miniconda@v2
       with:
-        mamba-version: "*"
         channels: conda-forge
         auto-activate-base: true
         activate-environment: ""
@@ -74,8 +73,8 @@ runs:
         # ask for conda build
         echo "conda-build" >> requirements.txt
 
-        # create environment
-        mamba create -n openergy --file requirements.txt
+        # create environment (we don't use mamba because of conflicts using conda-build afterwards)
+        conda create -n openergy --file requirements.txt
 
     - name: prepare build info
       shell: bash -l {0}
