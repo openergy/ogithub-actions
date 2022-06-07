@@ -54,7 +54,8 @@ runs:
       with:
         mamba-version: "*"
         channels: defaults,conda-forge
-        python-version: ${{ inputs.python-version }}
+        auto-activate-base: true
+        activate-environment: ""
 
     - name: add openergy conda channel if input was provided
       shell: bash -l {0}
@@ -73,15 +74,28 @@ runs:
         echo "y\r" | sudo bash ./EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
         sudo rm ./EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
 
-    - name: install requirements
+    - name: create environment
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
       run: |
-        set -e
-        # package requirements
-        mamba install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
+        - set -e
+        # specify python version if relevant
+        [ -z ${{ inputs.python-version }} ] || echo "python=$${{ inputs.python-version }}" >> requirements.txt
+
         # tests requirements
-        mamba install pytest pytest-cov
+        echo "pytest" >> requirements.txt
+        echo "pytest-cov" >> requirements.txt
+
+        # create environment
+        mamba crate -n openergy --file requirements.txt
+
+        # activate
+        conda activate openergy
+
+    - name: install requirements
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: mamba install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
 
     - name: copy and run tests
       shell: bash -l {0}

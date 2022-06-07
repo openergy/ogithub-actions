@@ -48,11 +48,12 @@ runs:
       working-directory: ${{ github.workspace }}/repo
       run: echo "::set-output name=build-version::$(sed -n '0,/^##/s/## //p' RELEASE.md)"
 
-    - name: install miniconda with conda-build
+    - name: install miniconda
       uses: conda-incubator/setup-miniconda@v2
       with:
-        channels: conda-forge
-        python-version: ${{ inputs.python-version }}
+        channels: defaults,conda-forge
+        auto-activate-base: true
+        activate-environment: ""
 
     - name: add openergy conda channel if input was provided
       shell: bash -l {0}
@@ -61,10 +62,22 @@ runs:
         set -e
         [ -z ${{ inputs.conda-channel-sysadmin-url }} ] || conda config --system --add channels ${{ inputs.conda-channel-sysadmin-url }}
 
-    - name: install conda build
+    - name: create environment
       shell: bash -l {0}
       working-directory:  ${{ github.workspace }}
-      run: conda install conda-build
+      run: |
+        set -e
+        # specify python version if relevant
+        [ -z ${{ inputs.python-version }} ] || echo "python=$${{ inputs.python-version }}" >> requirements.txt
+
+        # ask for conda build
+        echo "conda-build" >> requirements.txt
+
+        # create environment
+        conda create -n openergy --file requirements.txt
+
+        # activate
+        conda activate openergy
 
     - name: prepare build info
       shell: bash -l {0}
