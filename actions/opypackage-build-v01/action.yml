@@ -68,12 +68,12 @@ runs:
       run: |
         set -e
         # specify python version if relevant
-        [ -z ${{ inputs.python-requirement }} ] || echo "python${{ inputs.python-requirement }}" >> requirements.txt
+        #[ -z ${{ inputs.python-requirement }} ] || echo "python${{ inputs.python-requirement }}" >> requirements.txt
 
         # ask for conda build
         echo "conda-build" >> requirements.txt
 
-        # create environment (we don't use mamba because of conflicts using conda-build afterwards)
+        # create environment
         conda create -n openergy --file requirements.txt
 
     - name: prepare build info
@@ -88,10 +88,10 @@ runs:
         mkdir conda-build
 
         # download create_meta script
-        wget https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-build-v01/create_meta.py -P ${{ github.workspace }}
+        wget https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-build-v01/create_meta.py -P ${{ github.workspace }} ${{ inputs.python-requirement }}
 
         # create meta
-        python ${{ github.workspace }}/create_meta.py conda-build ${{ github.event.repository.name }} false
+        python ${{ github.workspace }}/create_meta.py conda-build ${{ github.event.repository.name }} false ${{ inputs.python-requirement }}
 
     - name: build
       shell: bash -l {0}

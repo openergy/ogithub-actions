@@ -1,6 +1,8 @@
 import os
 import sys
 
+DEFAULT_PYTHON_REQUIREMENT = ">=3.6,<4.0"
+
 meta = """
 package:
   name: __name__
@@ -17,13 +19,13 @@ __noarch__
 
 requirements:
   build:
-    - python>=3.6,<4.0
+    - python{python_requirement}
     - setuptools 
     - pip
 __build_requirements__
   
   run:
-    - python>=3.6,<4.0
+    - python{python_requirement}
 __dependencies__
 """
 
@@ -35,9 +37,9 @@ if __name__ == "__main__":
 
     # --- prepare variables
     try:
-        python_version = sys.argv[3] if sys.argv[3] in ("3.6", "3.7") else None
+        python_requirement = DEFAULT_PYTHON_REQUIREMENT if sys.argv[3] in ("", None) else sys.argv[3]
     except IndexError:
-        python_version = None
+        python_requirement = DEFAULT_PYTHON_REQUIREMENT
     version = ""
     path = os.getcwd()
     try:
@@ -61,10 +63,7 @@ if __name__ == "__main__":
     meta = meta.replace("__name__", repo_name)
     meta = meta.replace("__version__", version)
     meta = meta.replace("__path__", path)
-    if python_version == "3.6":
-        meta = meta.replace("python>=3.6,<4.0", "python>=3.6,<3.7")
-    elif python_version == "3.7":
-        meta = meta.replace("python>=3.6,<4.0", "python>=3.7,<3.8")
+    meta = meta.format(python_requirement=python_requirement)
 
     # --- manage dependencies
     dependencies = ""
@@ -75,7 +74,7 @@ if __name__ == "__main__":
             if line.startswith("#") or line == "":
                 continue
             dependencies += f"    - {line}\n"
-    # manage linux requiremenets
+    # manage linux requirements
     if arch_specific == "true" and os.path.isfile("./linux_requirements.txt"):
         with open("./linux_requirements.txt", "r") as f:
             for line in f.readlines():
