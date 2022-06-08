@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     # --- prepare variables
     try:
-        python_requirement = DEFAULT_PYTHON_REQUIREMENT if sys.argv[3] in ("", None) else sys.argv[3]
+        python_requirement = DEFAULT_PYTHON_REQUIREMENT if sys.argv[4] in ("", None) else sys.argv[4]
     except IndexError:
         python_requirement = DEFAULT_PYTHON_REQUIREMENT
     version = ""
