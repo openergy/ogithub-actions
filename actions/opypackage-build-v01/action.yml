@@ -53,8 +53,8 @@ runs:
       uses: conda-incubator/setup-miniconda@v2
       with:
         channels: conda-forge
+        conda-build-version: "*"
         auto-activate-base: true
-        activate-environment: ""
 
     - name: add openergy conda channel if input was provided
       shell: bash -l {0}
@@ -63,25 +63,11 @@ runs:
         set -e
         [ -z ${{ inputs.conda-channel-sysadmin-url }} ] || conda config --system --add channels ${{ inputs.conda-channel-sysadmin-url }}
 
-    - name: create environment
-      shell: bash -l {0}
-      working-directory:  ${{ github.workspace }}
-      run: |
-        set -e
-
-        # ask for conda build
-        echo "conda-build" >> requirements.txt
-
-        # create environment
-        conda create -n openergy --file requirements.txt
-
     - name: prepare build info
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo
       run: |
         set -e
-        # activate
-        conda activate openergy
 
         # prepare directory
         mkdir conda-build
@@ -97,8 +83,6 @@ runs:
       working-directory: ${{ github.workspace }}/repo/conda-build
       run: |
         set -e
-        # activate
-        conda activate openergy
 
         # log (for debug)
         conda env list
