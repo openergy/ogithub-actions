@@ -67,7 +67,7 @@ runs:
     - name: install EnergyPlus 9.2.0 if required
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
-      if: ${{ inputs.install-eplus-920 }}
+      if: ${{ inputs.install-eplus-920 }} == true
       run: |
         set -e
         wget -q https://github.com/NREL/EnergyPlus/releases/download/v9.2.0/EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
@@ -78,7 +78,7 @@ runs:
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
       run: |
-        - set -e
+        set -e
         # specify python version if relevant
         [ -z ${{ inputs.python-requirement }} ] || echo "python${{ inputs.python-requirement }}" >> requirements.txt
 
