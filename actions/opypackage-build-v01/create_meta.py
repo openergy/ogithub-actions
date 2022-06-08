@@ -1,7 +1,7 @@
 import os
 import sys
 
-DEFAULT_PYTHON_REQUIREMENT = ">=3.6,<4.0"
+DEFAULT_PYTHON_REQUIREMENT = ">=3.7,<3.8"
 
 meta = """
 package:
