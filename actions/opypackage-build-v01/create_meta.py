@@ -19,13 +19,13 @@ __noarch__
 
 requirements:
   build:
-    - python{python_requirement}
+    - python__python_requirement__
     - setuptools 
     - pip
 __build_requirements__
   
   run:
-    - python{python_requirement}
+    - python__python_requirement__
 __dependencies__
 """
 
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     meta = meta.replace("__name__", repo_name)
     meta = meta.replace("__version__", version)
     meta = meta.replace("__path__", path)
-    meta = meta.format(python_requirement=python_requirement)
+    meta = meta.replace("__python_requirement__", python_requirement)
 
     # --- manage dependencies
     dependencies = ""
