@@ -68,7 +68,7 @@ runs:
     - name: install EnergyPlus 9.2.0 if required
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
-      if: ${{ inputs.install-eplus-920 }} == true
+      if: ${{ inputs.install-eplus-920 == 'true' }}
       run: |
         set -e
         wget -q https://github.com/NREL/EnergyPlus/releases/download/v9.2.0/EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
@@ -80,7 +80,7 @@ runs:
       working-directory: ${{ github.workspace }}
       run: |
         set -e
-        # specify python version if relevant
+        # specify python version
         echo "python${{ inputs.python-requirement }}" >> requirements.txt
 
         # tests requirements
@@ -102,7 +102,7 @@ runs:
         conda env list
         conda config --show channels
 
-        # isntall
+        # install
         mamba install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
 
     - name: copy and run tests
