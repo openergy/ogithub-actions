@@ -14,6 +14,7 @@ on:
         description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
         required: false
         type: string
+        default: ">=3.7,<=3.8"
 
     secrets:
       # mandatory

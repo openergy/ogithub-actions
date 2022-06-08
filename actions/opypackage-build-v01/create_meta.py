@@ -1,8 +1,6 @@
 import os
 import sys
 
-DEFAULT_PYTHON_REQUIREMENT = ">=3.7,<3.8"
-
 meta = """
 package:
   name: __name__
@@ -34,12 +32,9 @@ if __name__ == "__main__":
     target_dir_path = sys.argv[1]
     repo_name = sys.argv[2]
     arch_specific = sys.argv[3]
+    python_requirement = sys.argv[4]
 
     # --- prepare variables
-    try:
-        python_requirement = DEFAULT_PYTHON_REQUIREMENT if sys.argv[4] in ("", None) else sys.argv[4]
-    except IndexError:
-        python_requirement = DEFAULT_PYTHON_REQUIREMENT
     version = ""
     path = os.getcwd()
     try:
