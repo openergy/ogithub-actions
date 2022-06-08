@@ -67,7 +67,6 @@ jobs:
         with:
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           build-version: ${{ needs.build.outputs.build-version }}
-          conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
 
   publish:
     needs: [ build, test, version ]
