@@ -16,7 +16,7 @@ inputs:
   python-requirement:
     description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
     required: false
-    default: ">=3.7,<=3.8"
+    default: ">=3.7,<3.8"
   install-eplus-920:
     description: Should I install Energy Plus 9.2.0 ?
     required: false
