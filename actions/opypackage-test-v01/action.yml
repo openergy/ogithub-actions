@@ -81,14 +81,17 @@ runs:
       run: |
         set -e
         # specify python version
-        echo "python${{ inputs.python-requirement }}" >> requirements.txt
+        echo "python${{ inputs.python-requirement }}" >> env-requirements.txt
 
         # tests requirements
-        echo "pytest" >> requirements.txt
-        echo "pytest-cov" >> requirements.txt
+        echo "pytest" >> env-requirements.txt
+        echo "pytest-cov" >> env-requirements.txt
+
+        # output requirements for debug
+        cat env-requirements.txt
 
         # create environment
-        mamba create -n openergy -q --file requirements.txt
+        mamba create -n openergy -q --file env-requirements.txt
 
     - name: install package
       shell: bash -l {0}
