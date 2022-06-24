@@ -11,10 +11,16 @@ on:
 
       # optional
       python-conda-requirement:
-        description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
+        description: Specific python requirement to install with conda (for example "=3.7.0" or ">=3.7,<3.8") ?
         required: false
         type: string
         default: ">=3.7,<3.8"
+
+      python-pip-requirement:
+        description: Specific python requirement to install with pip (for example "=3.7.0" or ">=3.7,<3.8") ?
+        required: false
+        type: string
+        default: ">=3.7"
 
       # optional
       publish-to-pypi:
@@ -88,6 +94,7 @@ jobs:
         with:
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           pypi-openergy-password: ${{ secrets.PYPI_OPENERGY_PASSWORD }}
+          python-requirement: ${{ inputs.python-pip-requirement }}
 
   conda-publish:
     needs: [ build, test, version ]
