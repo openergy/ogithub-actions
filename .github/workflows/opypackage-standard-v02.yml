@@ -74,7 +74,7 @@ jobs:
   version:
     needs: [ conda-build, conda-test ]
     runs-on: ubuntu-latest
-    if: needs.build.outputs.build-version != 'next'
+    if: needs.conda-build.outputs.build-version != 'next'
     steps:
       - name: version repo
         uses: openergy/ogithub-actions/actions/opy-version-v01@master
@@ -88,7 +88,7 @@ jobs:
     if: ${{ inputs.publish-to-pypi }}
     steps:
       - name: publish package to pypi
-        uses: openergy/ogithub-actions/actions/opypackage-pip-build-and-publish-v1@master
+        uses: openergy/ogithub-actions/actions/opypackage-pip-build-and-publish-v01@master
         with:
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           pypi-openergy-password: ${{ secrets.PYPI_OPENERGY_PASSWORD }}
