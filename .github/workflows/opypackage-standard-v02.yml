@@ -87,7 +87,6 @@ jobs:
         uses: openergy/ogithub-actions/actions/opypackage-pip-build-and-publish-v1@master
         with:
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-          build-version: ${{ needs.build.outputs.build-version }}
           pypi-openergy-password: ${{ secrets.PYPI_OPENERGY_PASSWORD }}
 
   conda-publish:

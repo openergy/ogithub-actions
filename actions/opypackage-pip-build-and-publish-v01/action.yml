@@ -5,9 +5,6 @@ inputs:
   admin-github-token:
     description: Openergy admin github token
     required: true
-  build-version:
-    description: version that was extracted from RELEASE.md
-    required: true
   pypi-openergy-password:
     description: password of openergy's pypi account
     required: true
