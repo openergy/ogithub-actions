@@ -64,7 +64,7 @@ runs:
         git push origin master
 
         # create and push version
-        echo "Versioning to version ${{ inputs.build-version }}"
+        echo "Versioning to version '${{ inputs.build-version }}'"
         git tag ${{ inputs.build-version }}
         git push origin ${{ inputs.build-version }}
 
