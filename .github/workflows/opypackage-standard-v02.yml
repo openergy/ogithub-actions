@@ -9,7 +9,6 @@ on:
         required: false
         type: boolean
 
-      # optional
       python-conda-requirement:
         description: Specific python requirement to install with conda (for example "=3.7.0" or ">=3.7,<3.8") ?
         required: false
@@ -22,7 +21,6 @@ on:
         type: string
         default: ">=3.7"
 
-      # optional
       publish-to-pypi:
         description: Should I publish to Pypi ? (! only for public packages !)
         required: false
@@ -61,7 +59,7 @@ jobs:
           conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
 
   conda-test:
-    needs: [ build ]
+    needs: [ conda-build ]
     runs-on: ubuntu-latest
     steps:
       - name: test package
@@ -74,7 +72,7 @@ jobs:
           install-eplus-920: ${{ inputs.install-eplus-920 }}
 
   version:
-    needs: [ build, test ]
+    needs: [ conda-build, conda-test ]
     runs-on: ubuntu-latest
     if: needs.build.outputs.build-version != 'next'
     steps:
@@ -85,7 +83,7 @@ jobs:
           build-version: ${{ needs.build.outputs.build-version }}
 
   pypi-publish:
-    needs: [ build, test, version ]
+    needs: [ conda-build, conda-test, version ]
     runs-on: ubuntu-latest
     if: ${{ inputs.publish-to-pypi }}
     steps:
@@ -97,7 +95,7 @@ jobs:
           python-requirement: ${{ inputs.python-pip-requirement }}
 
   conda-publish:
-    needs: [ build, test, version ]
+    needs: [ conda-build, conda-test, version ]
     runs-on: ubuntu-latest
     steps:
       - name: publish package to private conda registry
