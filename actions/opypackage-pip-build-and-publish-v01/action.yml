@@ -45,3 +45,4 @@ runs:
       with:
         user: openergy
         password: ${{ inputs.pypi-openergy-password }}
+        packages_dir: ${{ github.workspace }}/repo/dist
