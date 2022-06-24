@@ -8,15 +8,20 @@ on:
         description: Should I install Energy Plus 9.2.0 ?
         required: false
         type: boolean
-        deprecationMessage: opypackage-standard-v01 is deprecated, use opypackage-standard-v02 instead
 
       # optional
-      python-requirement:
+      python-conda-requirement:
         description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
         required: false
         type: string
         default: ">=3.7,<3.8"
-        deprecationMessage: opypackage-standard-v01 is deprecated, use opypackage-standard-v02 instead
+
+      # optional
+      publish-to-pypi:
+        description: Should I publish to Pypi ? (! only for public packages !)
+        required: false
+        type: boolean
+        default: false
 
     secrets:
       # mandatory
@@ -31,30 +36,33 @@ on:
       CONDA_CHANNEL_SYSADMIN_URL:
         description: URL containing sysadmin password to use Openergy's private conda channel.
         required: false
+      PYPI_OPENERGY_PASSWORD:
+        description: openergy's pypi account password (only if publish to pypi)
+        required: false
 
 jobs:
-  build:
+  conda-build:
     runs-on: ubuntu-latest
     outputs:
       build-version: ${{ steps.build-package.outputs.build-version }}
     steps:
       - name: build package
         id: build-package
-        uses: openergy/ogithub-actions/actions/opypackage-build-v01@master
+        uses: openergy/ogithub-actions/actions/opypackage-conda-build-v01@master
         with:
-          python-requirement: ${{ inputs.python-requirement }}
+          python-requirement: ${{ inputs.python-conda-requirement }}
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
 
-  test:
+  conda-test:
     needs: [ build ]
     runs-on: ubuntu-latest
     steps:
       - name: test package
-        uses: openergy/ogithub-actions/actions/opypackage-test-v01@master
+        uses: openergy/ogithub-actions/actions/opypackage-conda-test-v01@master
         with:
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-          python-requirement: ${{ inputs.python-requirement }}
+          python-requirement: ${{ inputs.python-conda-requirement }}
           build-version: ${{ needs.build.outputs.build-version }}
           conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
           install-eplus-920: ${{ inputs.install-eplus-920 }}
@@ -65,16 +73,28 @@ jobs:
     if: needs.build.outputs.build-version != 'next'
     steps:
       - name: version repo
-        uses: openergy/ogithub-actions/actions/opypackage-version-v01@master
+        uses: openergy/ogithub-actions/actions/opy-version-v01@master
         with:
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           build-version: ${{ needs.build.outputs.build-version }}
 
-  publish:
+  pypi-publish:
+    needs: [ build, test, version ]
+    runs-on: ubuntu-latest
+    if: ${{ inputs.publish-to-pypi }}
+    steps:
+      - name: publish package to pypi
+        uses: openergy/ogithub-actions/actions/opypackage-pip-build-and-publish-v1@master
+        with:
+          admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
+          build-version: ${{ needs.build.outputs.build-version }}
+          pypi-openergy-password: ${{ secrets.PYPI_OPENERGY_PASSWORD }}
+
+  conda-publish:
     needs: [ build, test, version ]
     runs-on: ubuntu-latest
     steps:
-      - name: publish package
+      - name: publish package to private conda registry
         uses: openergy/ogithub-actions/actions/opypackage-conda-publish-v01@master
         with:
           azure-conda-channel-key: ${{ secrets.AZURE_CONDA_CHANNEL_KEY }}

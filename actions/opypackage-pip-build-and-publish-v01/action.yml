@@ -1,0 +1,50 @@
+name: Build and publish openergy python package to pypi
+description: package must have been correctly versioned
+inputs:
+  # mandatory
+  admin-github-token:
+    description: Openergy admin github token
+    required: true
+  build-version:
+    description: version that was extracted from RELEASE.md
+    required: true
+  pypi-openergy-password:
+    description: password of openergy's pypi account
+    required: true
+
+  # optional
+  python-requirement:
+    description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
+    required: false
+    default: ">=3.7"
+
+# https://packaging.python.org/en/latest/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
+runs:
+  using: composite
+  steps:
+    - name: checkout repo  # (automatically on develop)
+      uses: actions/checkout@v3
+      with:
+        path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
+        token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
+
+    - name: setup python
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ inputs.python-requirement }}
+
+    - name: install python packages
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo
+      run: python -m pip install build
+
+    - name: build a binary wheel and a source tarball
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo
+      run: python -m build --sdist --wheel --outdir dist/
+
+    - name: pubish to pypi
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: openergy
+        password: ${{ inputs.pypi-openergy-password }}

@@ -5,25 +5,21 @@ inputs:
   admin-github-token:
     description: Openergy admin github token
     required: true
-    deprecationMessage: opypackage-version-v01 is deprecated, use opy-version-v01 instead
   build-version:
     description: version that was extracted from RELEASE.md
     required: true
-    deprecationMessage: opypackage-version-v01 is deprecated, use opy-version-v01 instead
 
   # optional
   package-dir-name:
     description: name of the package in which is version.py
     required: false
     default: ${{ github.event.repository.name }}
-    deprecationMessage: opypackage-version-v01 is deprecated, use opy-version-v01 instead
 
   # config
   build-artifact-name:
     description: name of the artifact in which package build is stored
     required: false
     default: conda-build
-    deprecationMessage: opypackage-version-v01 is deprecated, use opy-version-v01 instead
 
 # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
 # https://github.com/marketplace/actions/setup-miniconda#important

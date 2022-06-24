@@ -5,26 +5,22 @@ inputs:
   admin-github-token:
     description: Openergy admin github token
     required: true
-    deprecationMessage: opypackage-build-v01 is deprecated, use opypackage-conda-build-v01 instead
 
   # optional
   conda-channel-sysadmin-url:
     description: openergy conda channel (if openergy packages are needed for build)
     required: false
-    deprecationMessage: opypackage-build-v01 is deprecated, use opypackage-conda-build-v01 instead
 
   python-requirement:
     description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
     required: false
     default: ">=3.7,<3.8"
-    deprecationMessage: opypackage-build-v01 is deprecated, use opypackage-conda-build-v01 instead
 
   # config
   build-artifact-name:
     description: name of the artifact in which build will be stored
     required: false
     default: conda-build
-    deprecationMessage: opypackage-build-v01 is deprecated, use opypackage-conda-build-v01 instead
 
 outputs:
   build-version:
