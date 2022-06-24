@@ -19,10 +19,11 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: checkout repo  # (automatically on develop)
+    - name: checkout repo
       uses: actions/checkout@v3
       with:
         path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
+        ref: master  # we use master (it was just written during version step)
         token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
 
     - name: setup python
