@@ -8,7 +8,6 @@ on:
         description: Should I install Energy Plus 9.2.0 ?
         required: false
         type: boolean
-        deprecationMessage: opypackage-standard-v01 is deprecated, use opypackage-standard-v02 instead
 
       # optional
       python-requirement:
@@ -16,7 +15,6 @@ on:
         required: false
         type: string
         default: ">=3.7,<3.8"
-        deprecationMessage: opypackage-standard-v01 is deprecated, use opypackage-standard-v02 instead
 
     secrets:
       # mandatory
@@ -38,6 +36,8 @@ jobs:
     outputs:
       build-version: ${{ steps.build-package.outputs.build-version }}
     steps:
+      - name: deprecation warning
+        run: echo "::warning ::workflow is deprecated, please use a more recent version"
       - name: build package
         id: build-package
         uses: openergy/ogithub-actions/actions/opypackage-build-v01@master
