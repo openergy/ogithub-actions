@@ -44,15 +44,16 @@ runs:
         name: ${{ inputs.build-artifact-name }}
         path: ${{ github.workspace }}/conda-build
 
-#    - name: prepare miniconda cache
-#      uses: actions/cache@v2
-#      with:
-#        path: ~/conda_pkgs_dir
-#        key: ${{ runner.os }}-${{ hashFiles('${{ github.workspace }}/conda-build/**') }}
+    - name: prepare miniconda cache
+      uses: actions/cache@v2
+      with:
+        path: ~/conda_pkgs_dir
+        key: ${{ runner.os }}-${{ hashFiles('${{ github.workspace }}/conda-build/**') }}
 
     - name: install miniconda
       uses: conda-incubator/setup-miniconda@v2
       with:
+        miniconda-version: "latest"
         mamba-version: "*"
         channels: conda-forge
         auto-activate-base: true
