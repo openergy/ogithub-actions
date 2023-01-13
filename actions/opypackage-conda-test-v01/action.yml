@@ -53,6 +53,9 @@ runs:
     - name: install miniconda
       uses: conda-incubator/setup-miniconda@v2
       with:
+        # bug appeared in 01/2023, seems to be caused by no miniconda-version and mamba-version: "*". Fixed by
+        # putting miniconda-version: "latest", thanks to following comment :
+        # https://github.com/conda-incubator/setup-miniconda/issues/182#issuecomment-1032055889
         miniconda-version: "latest"
         mamba-version: "*"
         channels: conda-forge
