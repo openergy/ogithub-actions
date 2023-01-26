@@ -1,0 +1,125 @@
+name: Version repository of openergy python package
+description: conda-build artifact is used as package to version
+inputs:
+  # mandatory
+  admin-github-token:
+    description: Openergy admin github token
+    required: true
+  build-version:
+    description: version that was extracted from RELEASE.md
+    required: true
+  #Add of a new parameter compared to "opy-version-v01" to know the kind of langage used and then the kind of file we have to modify (version.py for python or package.json for JS langage)
+  language:
+    description: Describe the kind of langage used in the repo. With Python => we must put the updated version in the file "version.py". With JS, we want to update the version in the property "version" in package.JSON.
+    required: true  
+
+  # optional
+  package-dir-name:
+    description: name of the package in which is version.py
+    required: false
+    default: ${{ github.event.repository.name }}
+
+  # config
+  build-artifact-name:
+    description: name of the artifact in which package build is stored
+    required: false
+    default: conda-build
+
+# https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
+# https://github.com/marketplace/actions/setup-miniconda#important
+runs:
+  using: composite
+  steps:
+    - name: checkout repo  # automatically on develop
+      uses: actions/checkout@v2
+      with:
+        path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
+        fetch-depth: 0  # must fetch all or merges will fail
+        token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
+
+    - name: configure git
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo
+      run: |
+        set -e
+        git config --global user.name Openergy Admin
+        git config --global user.email admin@openergy.fr
+
+      # This part is just for python language 
+    - if: ${{ inputs.language == 'python' }}
+      name: update branches and tags for python language 
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo
+      run: |
+        set -e
+
+        # checkout develop
+        git checkout develop
+        git pull  # does not seem to be up to date (which is quite odd)
+
+        # update version.py
+        printf 'version = "${{ inputs.build-version }}"\n' > ./${{ inputs.package-dir-name }}/version.py
+        git commit ./${{ inputs.package-dir-name }}/version.py -m "[skip ci] updated version in version.py as ${{ inputs.build-version }}" || :
+        # || : => works as try/except:pass (commit may fail in certain cases if code has not changed, \
+        #  but it shouldn't be a problem)
+
+        # checkout master, merge develop, push master
+        git checkout master
+        git pull  # make sure it is up to date
+        git merge --ff-only develop
+        git push origin master
+
+        # create and push version
+        echo "Versioning to version '${{ inputs.build-version }}'"
+        git tag ${{ inputs.build-version }}
+        git push origin ${{ inputs.build-version }}
+
+        # checkout develop and merge master
+        git checkout develop
+        git merge master
+
+        # add and commit the next version to RELEASE.md
+        sed -i "0,/^##/s/##/## next\\n\\n##/" RELEASE.md
+        git commit RELEASE.md -m "[skip ci] added ## next to RELEASE.md"
+
+        # push develop
+        git push origin develop
+
+
+    - if: ${{ inputs.language == 'javascript' }}
+      name: update branches and tags for JS langage 
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo
+      run: |
+        set -e
+
+        # checkout develop
+        git checkout develop
+        git pull  # does not seem to be up to date (which is quite odd)
+
+        # update package.json
+        VERSION=$(grep -oP '(?<=## ).*' RELEASE.md | head -n 1)
+        sed -i "s|\"version\": \".*\"|\"version\": \"$VERSION\"|g" package.json
+        git commit ./package.json -m "[skip ci] updated version in package.json as ${{ inputs.build-version }}" || :
+
+        # checkout master, merge develop, push master
+        git checkout master
+        git pull  # make sure it is up to date
+        git merge --ff-only develop
+        git push origin master
+
+        # create and push version
+        echo "Versioning to version '${{ inputs.build-version }}'"
+        git tag ${{ inputs.build-version }}
+        git push origin ${{ inputs.build-version }}
+
+        # checkout develop and merge master
+        git checkout develop
+        git merge master
+
+        # add and commit the next version to RELEASE.md
+        sed -i "0,/^##/s/##/## next\\n\\n##/" RELEASE.md
+        git commit RELEASE.md -m "[skip ci] added ## next to RELEASE.md"
+
+        # push develop
+        git push origin develop
