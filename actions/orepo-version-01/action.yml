@@ -1,5 +1,5 @@
-name: Version repository of openergy python package
-description: conda-build artifact is used as package to version
+name: Version repository of openergy project
+description: This workflow allows to update the version.py file (for python project/package) and the package.json file (for javascript project) with the version that was extracted from RELEASE.md
 inputs:
   # mandatory
   admin-github-token:
@@ -8,20 +8,19 @@ inputs:
   build-version:
     description: version that was extracted from RELEASE.md
     required: true
-  #Add of a new parameter compared to "opy-version-v01" to know the kind of langage used and then the kind of file we have to modify (version.py for python or package.json for JS langage)
   language:
-    description: Describe the kind of langage used in the repo. With Python => we must put the updated version in the file "version.py". With JS, we want to update the version in the property "version" in package.JSON.
+    description: Describe the kind of langage used in the repo. With Python => we must put the extracted version (from RELEASE.md file) in the file "version.py". With JS, we must update the version in the property "version" in package.json file.
     required: true  
 
   # optional
   package-dir-name:
-    description: name of the package in which is version.py
+    description: name of the package in which is version.py (for language = 'python')
     required: false
     default: ${{ github.event.repository.name }}
 
   # config
   build-artifact-name:
-    description: name of the artifact in which package build is stored
+    description: name of the artifact in which package build is stored (for language = 'python')
     required: false
     default: conda-build
 
@@ -94,32 +93,32 @@ runs:
         set -e
 
         # checkout develop
-        git checkout develop
-        git pull  # does not seem to be up to date (which is quite odd)
+        # git checkout develop
+        # git pull  # does not seem to be up to date (which is quite odd)
 
         # update package.json
         VERSION=$(grep -oP '(?<=## ).*' RELEASE.md | head -n 1)
         sed -i "s|\"version\": \".*\"|\"version\": \"$VERSION\"|g" package.json
         git commit ./package.json -m "[skip ci] updated version in package.json as ${{ inputs.build-version }}" || :
 
-        # checkout master, merge develop, push master
-        git checkout master
-        git pull  # make sure it is up to date
-        git merge --ff-only develop
-        git push origin master
+        # # checkout master, merge develop, push master
+        # git checkout master
+        # git pull  # make sure it is up to date
+        # git merge --ff-only develop
+        # git push origin master
 
-        # create and push version
-        echo "Versioning to version '${{ inputs.build-version }}'"
-        git tag ${{ inputs.build-version }}
-        git push origin ${{ inputs.build-version }}
+        # # create and push version
+        # echo "Versioning to version '${{ inputs.build-version }}'"
+        # git tag ${{ inputs.build-version }}
+        # git push origin ${{ inputs.build-version }}
 
-        # checkout develop and merge master
-        git checkout develop
-        git merge master
+        # # checkout develop and merge master
+        # git checkout develop
+        # git merge master
 
-        # add and commit the next version to RELEASE.md
-        sed -i "0,/^##/s/##/## next\\n\\n##/" RELEASE.md
-        git commit RELEASE.md -m "[skip ci] added ## next to RELEASE.md"
+        # # add and commit the next version to RELEASE.md
+        # sed -i "0,/^##/s/##/## next\\n\\n##/" RELEASE.md
+        # git commit RELEASE.md -m "[skip ci] added ## next to RELEASE.md"
 
-        # push develop
-        git push origin develop
+        # # push develop
+        # git push origin develop
