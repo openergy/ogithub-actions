@@ -101,25 +101,25 @@ runs:
         sed -i "s|\"version\": \".*\"|\"version\": \"$VERSION\"|g" package.json
         git commit ./package.json -m "[skip ci] updated version in package.json as ${{ inputs.build-version }}" || :
 
-        # checkout master, merge develop, push master
-        git checkout master
-        git pull  # make sure it is up to date
-        git merge --ff-only develop
-        git push origin master
+        # # checkout master, merge develop, push master
+        # git checkout master
+        # git pull  # make sure it is up to date
+        # git merge --ff-only develop
+        # git push origin master
 
-        # create and push version
-        echo "Versioning to version '${{ inputs.build-version }}'"
-        git tag ${{ inputs.build-version }}
-        git push origin ${{ inputs.build-version }}
+        # # create and push version
+        # echo "Versioning to version '${{ inputs.build-version }}'"
+        # git tag ${{ inputs.build-version }}
+        # git push origin ${{ inputs.build-version }}
 
-        # checkout develop and merge master
-        git checkout develop
-        git merge master
+        # # checkout develop and merge master
+        # git checkout develop
+        # git merge master
 
-        # add and commit the next version to RELEASE.md
-        sed -i "0,/^##/s/##/## next\\n\\n##/" RELEASE.md
-        git commit RELEASE.md -m "[skip ci] added ## next to RELEASE.md"
+        # # add and commit the next version to RELEASE.md
+        # sed -i "0,/^##/s/##/## next\\n\\n##/" RELEASE.md
+        # git commit RELEASE.md -m "[skip ci] added ## next to RELEASE.md"
 
-        # push develop
-        git push origin develop
+        # # push develop
+        # git push origin develop
         
