@@ -92,9 +92,9 @@ runs:
       run: |
         set -e
 
-        checkout develop
-        git checkout develop
-        git pull  # does not seem to be up to date (which is quite odd)
+        # checkout develop
+        # git checkout develop
+        # git pull  # does not seem to be up to date (which is quite odd)
 
         # update package.json
         VERSION=$(grep -oP '(?<=## ).*' RELEASE.md | head -n 1)
