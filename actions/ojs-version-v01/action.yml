@@ -1,0 +1,74 @@
+name: Version repository of openergy python package
+description: conda-build artifact is used as package to version
+inputs:
+  # mandatory
+  admin-github-token:
+    description: Openergy admin github token
+    required: true
+  build-version:
+    description: version that was extracted from RELEASE.md
+    required: true
+
+  # config
+  build-artifact-name:
+    description: name of the artifact in which package build is stored
+    required: false
+    default: conda-build
+
+# https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
+# https://github.com/marketplace/actions/setup-miniconda#important
+runs:
+  using: composite
+  steps:
+    - name: checkout repo  # automatically on develop
+      uses: actions/checkout@v2
+      with:
+        path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
+        fetch-depth: 0  # must fetch all or merges will fail
+        token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
+
+    - name: configure git
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo
+      run: |
+        set -e
+        git config --global user.name Openergy Admin
+        git config --global user.email admin@openergy.fr
+
+    - name: update branches and tags
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo
+      run: |
+        set -e
+
+        # checkout develop
+        git checkout develop
+        git pull  # does not seem to be up to date (which is quite odd)
+
+        # update package.py
+        jq '.version = $version' --arg version "${{ inputs.build-version }}" package.json > tmp.json && mv tmp.json package.json
+        git commit ./package.json -m "[skip ci] updated version in package.json as ${{ inputs.build-version }}" || :
+        # || : => works as try/except:pass (commit may fail in certain cases if code has not changed, \
+        #  but it shouldn't be a problem)
+
+        # checkout master, merge develop, push master
+        git checkout master
+        git pull  # make sure it is up to date
+        git merge --ff-only develop
+        git push origin master
+
+        # create and push version
+        echo "Versioning to version '${{ inputs.build-version }}'"
+        git tag ${{ inputs.build-version }}
+        git push origin ${{ inputs.build-version }}
+
+        # checkout develop and merge master
+        git checkout develop
+        git merge master
+
+        # add and commit the next version to RELEASE.md
+        sed -i "0,/^##/s/##/## next\\n\\n##/" RELEASE.md
+        git commit RELEASE.md -m "[skip ci] added ## next to RELEASE.md"
+
+        # push develop
+        git push origin develop
