@@ -20,6 +20,9 @@ inputs:
   install-eplus-920:
     description: Should I install Energy Plus 9.2.0 ?
     required: false
+  install-eplus-2210:
+    description: Should I install Energy Plus 22.1.0 ?
+    required: false
 
   # config
   build-artifact-name:
@@ -78,6 +81,16 @@ runs:
         wget -q https://github.com/NREL/EnergyPlus/releases/download/v9.2.0/EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
         echo "y\r" | sudo bash ./EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
         sudo rm ./EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
+
+    - name: install EnergyPlus 22.1.0 if required
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      if: ${{ inputs.install-eplus-2210 == 'true' }}
+      run: |
+        set -e
+        wget -q https://github.com/NREL/EnergyPlus/releases/download/v22.1.0/EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
+        echo "y\r" | sudo bash ./EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
+        sudo rm ./EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
 
     - name: create environment
       shell: bash -l {0}
