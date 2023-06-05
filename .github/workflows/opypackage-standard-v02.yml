@@ -51,7 +51,7 @@ on:
 
 jobs:
   conda-build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     outputs:
       build-version: ${{ steps.build-package.outputs.build-version }}
     steps:
@@ -65,7 +65,7 @@ jobs:
 
   conda-test:
     needs: [ conda-build ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: test package
         uses: openergy/ogithub-actions/actions/opypackage-conda-test-v01@master
@@ -79,7 +79,7 @@ jobs:
 
   version:
     needs: [ conda-build, conda-test ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: needs.conda-build.outputs.build-version != 'next'
     steps:
       - name: version repo
@@ -90,7 +90,7 @@ jobs:
 
   pypi-publish:
     needs: [ conda-build, conda-test, version ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     if: ${{ inputs.publish-to-pypi }}
     steps:
       - name: publish package to pypi
@@ -102,7 +102,7 @@ jobs:
 
   conda-publish:
     needs: [ conda-build, conda-test, version ]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - name: publish package to private conda registry
         uses: openergy/ogithub-actions/actions/opypackage-conda-publish-v01@master
