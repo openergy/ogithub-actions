@@ -53,7 +53,7 @@ runs:
       uses: conda-incubator/setup-miniconda@v2
       with:
         channels: conda-forge
-        conda-build-version: "*"
+        mamba-version: "*"
         auto-activate-base: true
         activate-environment: ""
 
@@ -86,11 +86,11 @@ runs:
         set -e
 
         # log (for debug)
-        conda env list
-        conda config --show channels
+        mamba env list
+        mamba config --show channels
 
         # build
-        conda-build . --croot ${{ github.workspace }}/conda-build-to-upload
+        mamba build . --croot ${{ github.workspace }}/conda-build-to-upload
 
     - name: upload build
       uses: actions/upload-artifact@v2
