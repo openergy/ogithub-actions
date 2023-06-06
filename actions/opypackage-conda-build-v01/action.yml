@@ -89,8 +89,10 @@ runs:
         mamba env list
         mamba config --show channels
 
+        mamba install conda-build
+
         # build
-        mamba build . --croot ${{ github.workspace }}/conda-build-to-upload
+        conda build . --croot ${{ github.workspace }}/conda-build-to-upload
 
     - name: upload build
       uses: actions/upload-artifact@v2
