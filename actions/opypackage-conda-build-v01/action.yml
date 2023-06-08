@@ -56,7 +56,7 @@ runs:
         miniforge-variant: Mambaforge
         miniforge-version: latest
         auto-activate-base: true
-        activate-environment: "test"
+        activate-environment: ""
         use-mamba: true
 
     - name: add openergy conda channel if input was provided
@@ -91,7 +91,7 @@ runs:
         mamba env list
 
         # build
-        mamba env update -n test -f requirements.txt
+        mamba env update -f requirements.txt
 
     - name: upload build
       uses: actions/upload-artifact@v2
