@@ -53,9 +53,11 @@ runs:
       uses: conda-incubator/setup-miniconda@v2
       with:
         channels: conda-forge
-        mamba-version: "*"
+        miniforge-variant: Mambaforge
+        miniforge-version: latest
         auto-activate-base: true
-        activate-environment: ""
+        activate-environment: "test"
+        use-mamba: true
 
     - name: add openergy conda channel if input was provided
       shell: bash -l {0}
@@ -87,12 +89,9 @@ runs:
 
         # log (for debug)
         mamba env list
-        mamba config --show channels
-
-        mamba install conda-build
 
         # build
-        conda build . --croot ${{ github.workspace }}/conda-build-to-upload
+        mamba env update -n test -f requirements.txt
 
     - name: upload build
       uses: actions/upload-artifact@v2
