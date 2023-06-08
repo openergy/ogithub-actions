@@ -91,7 +91,7 @@ runs:
         mamba env list
 
         # build
-        mamba env update -f requirements.txt
+        mamba env update -f ${{ github.workspace }}/repo/conda-build/requirements.txt
 
     - name: upload build
       uses: actions/upload-artifact@v2
