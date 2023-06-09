@@ -56,8 +56,9 @@ runs:
     - name: install miniconda
       uses: conda-incubator/setup-miniconda@v2
       with:
+        miniconda-version: "latest"
+        mamba-version: "*"
         channels: conda-forge
-        conda-build-version: "*"
         auto-activate-base: true
         activate-environment: ""
 
