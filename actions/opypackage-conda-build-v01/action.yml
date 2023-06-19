@@ -84,7 +84,7 @@ runs:
         # prepare directory
         mkdir conda-build
 
-        mamba install boa -c conda-forge
+        conda install boa -c conda-forge
 
         # download create_meta script
         wget https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-build-v01/create_meta.py -P ${{ github.workspace }}
