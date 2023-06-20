@@ -55,8 +55,6 @@ jobs:
     outputs:
       build-version: ${{ steps.build-package.outputs.build-version }}
     steps:
-      - name: deprecation warning
-        run: echo "::warning ::workflow is deprecated, please use a more recent version"
       - name: build package
         id: build-package
         uses: openergy/ogithub-actions/actions/opypackage-conda-build-v01@master
