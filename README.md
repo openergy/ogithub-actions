@@ -8,4 +8,4 @@ if an action must be modified:
 - workflow should also be versioned:
     - new workflow points on new action while we let the old workflow pointing on old action
     
-This versioning is important so that all Openergy's github actions can always work. 
+This versioning is important so that all Openergy's github actions are always operational 
