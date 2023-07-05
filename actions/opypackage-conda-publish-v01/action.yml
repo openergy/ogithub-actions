@@ -17,12 +17,6 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: "download build"
-      uses: actions/download-artifact@v2
-      with:
-        name: conda-build
-        path: ${{ github.workspace }}/conda-build
-
     - name: "install and configure rclone"
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
@@ -62,11 +56,21 @@ runs:
         auto-activate-base: true
         activate-environment: ""
 
-    - name: "download packages, update index and upload to channel"
+    - name: "download packages"
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: rclone copy condachannel:static conda-build
+
+    - name: "download build"
+      uses: actions/download-artifact@v2
+      with:
+        name: conda-build
+        path: ${{ github.workspace }}/conda-build
+
+    - name: "update index and upload to channel"
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
       run: |
         set -e
-        rclone copy condachannel:static conda-build
         conda index conda-build
         rclone copy conda-build condachannel:static
