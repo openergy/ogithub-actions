@@ -26,7 +26,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: checkout repo  # automatically on develop
+    - name: checkout repo  # automatically on push branch
       uses: actions/checkout@v2
       with:
         path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
@@ -47,8 +47,12 @@ runs:
       run: |
         set -e
 
-        # checkout develop
-        git checkout develop
+        # store branch name
+        branchName=${{ github.ref }}
+        branchName=${branchName#refs/heads/}
+
+        # checkout pull branch
+        git checkout "$branchName"
         git pull  # does not seem to be up to date (which is quite odd)
 
         # update version.py
@@ -57,24 +61,27 @@ runs:
         # || : => works as try/except:pass (commit may fail in certain cases if code has not changed, \
         #  but it shouldn't be a problem)
 
-        # checkout master, merge develop, push master
-        git checkout master
-        git pull  # make sure it is up to date
-        git merge --ff-only develop
-        git push origin master
+        # if develop
+        if [ "$branchName" == "develop" ]; then
+          # checkout master, merge develop, push master
+          git checkout master
+          git pull  # make sure it is up to date
+          git merge --ff-only develop
+          git push origin master
+
+          # checkout develop and merge master
+          git checkout develop
+          git merge master
+        fi
 
         # create and push version
         echo "Versioning to version '${{ inputs.build-version }}'"
         git tag ${{ inputs.build-version }}
         git push origin ${{ inputs.build-version }}
 
-        # checkout develop and merge master
-        git checkout develop
-        git merge master
-
         # add and commit the next version to RELEASE.md
         sed -i "0,/^##/s/##/## next\\n\\n##/" RELEASE.md
         git commit RELEASE.md -m "[skip ci] added ## next to RELEASE.md"
 
-        # push develop
-        git push origin develop
+        # push pull branch
+        git push origin "$branchName"

@@ -35,7 +35,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: checkout repo  # (automatically on develop)
+    - name: checkout repo  # (automatically on push branch)
       uses: actions/checkout@v2
       with:
         path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository

@@ -31,7 +31,7 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: checkout repo # automatically on develop
+    - name: checkout repo # automatically on pull branch
       uses: actions/checkout@v3
       with:
         path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
