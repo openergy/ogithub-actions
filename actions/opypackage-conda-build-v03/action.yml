@@ -55,10 +55,10 @@ runs:
       run: echo "::set-output name=build-version::$(sed -n '0,/^##/s/## //p' RELEASE.md)"
 
     - name: if not next, set version in version.py (build will refuse next as version)
-      if: ${{ steps.set-version.outputs.build-version != 'next' }}
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo
-      run: printf 'version = "${{ steps.set-version.outputs.build-version }}"\n' > ./${{ inputs.package-dir-name }}/version.py
+      run: |
+        if [ ${{ steps.set-version.outputs.build-version == 'next' }} ] || printf 'version = "${{ steps.set-version.outputs.build-version }}"\n' > ./${{ inputs.package-dir-name }}/version.py
 
     - name: install miniconda
       uses: conda-incubator/setup-miniconda@v2
