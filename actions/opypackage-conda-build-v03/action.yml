@@ -58,7 +58,9 @@ runs:
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo
       run: |
-        if [ ${{ steps.set-version.outputs.build-version == 'next' }} ] || printf 'version = "${{ steps.set-version.outputs.build-version }}"\n' > ./${{ inputs.package-dir-name }}/version.py
+        if [ ${{ steps.set-version.outputs.build-version != 'next' }} ]; then
+          printf 'version = "${{ steps.set-version.outputs.build-version }}"\n' > ./${{ inputs.package-dir-name }}/version.py
+        fi
 
     - name: install miniconda
       uses: conda-incubator/setup-miniconda@v2
