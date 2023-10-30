@@ -71,7 +71,6 @@ runs:
         create-args: >-
           boa
         cache-downloads: true
-        cache-environment: true
 
 
 
