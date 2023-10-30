@@ -65,12 +65,14 @@ runs:
     - name: install micromamba
       uses: mamba-org/setup-micromamba@v1
       with:
+        environment-name: test
         condarc: |
           channels:
             - conda-forge
         create-args: >-
           boa
         cache-downloads: true
+        cache-environment: true
 
 
 
