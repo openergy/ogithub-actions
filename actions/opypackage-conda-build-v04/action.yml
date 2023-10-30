@@ -62,18 +62,13 @@ runs:
           printf 'version = "${{ steps.set-version.outputs.build-version }}"\n' > ./${{ inputs.package-dir-name }}/version.py
         fi
 
-#    - name: install miniconda
-#      uses: conda-incubator/setup-miniconda@v2
-#      with:
-#        channels: conda-forge
-#        mamba-version: "*"
-#        conda-build-version: "*"
-#        auto-activate-base: true
-#        activate-environment: ""
-
+#https://github.com/pandas-dev/pandas/blob/main/.github/workflows/package-checks.yml
+#https://medium.com/@QuantStack/open-software-packaging-for-science-61cecee7fc23:
+# setup-mamba was the original CI action with mamba, now is depreciated -> setup-micromamba is the maintained action
     - name: install micromamba
       uses: mamba-org/setup-micromamba@v1
       with:
+        environment-name: build-env
         condarc: |
           channels:
             - conda-forge
@@ -99,9 +94,6 @@ runs:
 
         # prepare directory
         mkdir conda-build
-
-#        # install boa to use mambabuild
-#        mamba install boa -c conda-forge
 
         # download create_meta script
         wget https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-build-v01/create_meta.py -P ${{ github.workspace }}
