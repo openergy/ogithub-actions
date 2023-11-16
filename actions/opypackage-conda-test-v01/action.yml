@@ -92,6 +92,17 @@ runs:
         echo "y\r" | sudo bash ./EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
         sudo rm ./EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
 
+    - name: install EnergyPlus 23.2.0 if required
+        shell: bash -l {0}
+        working-directory: ${{ github.workspace }}
+        if: ${{ inputs.install-eplus-2320 == 'true' }}
+        run: |
+          set -e
+          wget -q https://github.com/NREL/EnergyPlus/releases/download/v23.2.0/EnergyPlus-23.2.0-7636e6b3e9-Linux-Ubuntu22.04-x86_64.sh
+          echo "y\r" | sudo bash ./EnergyPlus-23.2.0-7636e6b3e9-Linux-Ubuntu22.04-x86_64.sh
+          sudo rm ./EnergyPlus-23.2.0-7636e6b3e9-Linux-Ubuntu22.04-x86_64.sh
+
+
     - name: create environment
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}

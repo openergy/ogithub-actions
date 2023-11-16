@@ -14,6 +14,11 @@ on:
         required: false
         type: boolean
 
+      install-eplus-2320:
+        description: Should I install Energy Plus 23.2.0 ?
+        required: false
+        type: boolean
+
       python-conda-requirement:
         description: Specific python requirement to install with conda (for example "=3.7.0" or ">=3.7,<3.8") ?
         required: false
@@ -76,6 +81,8 @@ jobs:
           conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
           install-eplus-920: ${{ inputs.install-eplus-920 }}
           install-eplus-2210: ${{ inputs.install-eplus-2210 }}
+          install-eplus-2320: ${{ inputs.install-eplus-2320 }}
+
 
   version:
     needs: [ conda-build, conda-test ]
