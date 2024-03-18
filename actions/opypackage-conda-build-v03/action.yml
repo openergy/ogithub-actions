@@ -62,27 +62,14 @@ runs:
           printf 'version = "${{ steps.set-version.outputs.build-version }}"\n' > ./${{ inputs.package-dir-name }}/version.py
         fi
 
-#    - name: install miniconda
-#      uses: conda-incubator/setup-miniconda@v2
-#      with:
-#        channels: conda-forge
-#        mamba-version: "*"
-#        conda-build-version: "*"
-#        auto-activate-base: true
-#        activate-environment: ""
-
-    - name: install micromamba
-      uses: mamba-org/setup-micromamba@v1
+    - name: install miniconda
+      uses: conda-incubator/setup-miniconda@v2
       with:
-        condarc: |
-          channels:
-            - conda-forge
-        create-args: >-
-          boa
-        cache-downloads: true
-        cache-environment: true
-
-
+        channels: conda-forge
+        mamba-version: "*"
+        conda-build-version: "*"
+        auto-activate-base: true
+        activate-environment: ""
 
     - name: add openergy conda channel if input was provided
       shell: bash -l {0}
@@ -100,8 +87,8 @@ runs:
         # prepare directory
         mkdir conda-build
 
-#        # install boa to use mambabuild
-#        mamba install boa -c conda-forge
+        # install boa to use mambabuild
+        mamba install boa -c conda-forge
 
         # download create_meta script
         wget https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-build-v01/create_meta.py -P ${{ github.workspace }}
