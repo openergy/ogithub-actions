@@ -118,7 +118,7 @@ runs:
         cat env-requirements.txt
 
         # create environment
-        mamba create -n openergy -q --file env-requirements.txt
+        micromamba create -n openergy -q --file env-requirements.txt
 
     - name: install package
       shell: bash -l {0}
@@ -133,7 +133,7 @@ runs:
         conda config --show channels
 
         # install
-        mamba install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
+        micromamba install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
 
     - name: copy and run tests
       shell: bash -l {0}
