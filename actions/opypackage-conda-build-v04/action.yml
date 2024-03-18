@@ -1,0 +1,123 @@
+name: Build Openergy python package
+description: build is uploaded to conda-build artifact
+inputs:
+  # mandatory
+  admin-github-token:
+    description: Openergy admin github token
+    required: true
+
+  # optional
+  conda-channel-sysadmin-url:
+    description: openergy conda channel (if openergy packages are needed for build)
+    required: false
+
+  python-requirement:
+    description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
+    required: false
+    default: ">=3.7,<3.8"
+
+  package-dir-name:
+    description: name of the package in which is version.py
+    required: false
+    default: ${{ github.event.repository.name }}
+
+  # config
+  build-artifact-name:
+    description: name of the artifact in which build will be stored
+    required: false
+    default: conda-build
+
+outputs:
+  build-version:
+    description: version that is extracted from RELEASE.md
+    value: ${{ steps.set-version.outputs.build-version }}
+# https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
+# https://github.com/marketplace/actions/setup-miniconda#important
+runs:
+  using: composite
+  steps:
+    - name: checkout repo # automatically on push branch
+      uses: actions/checkout@v3
+      with:
+        path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
+        token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
+
+    - name: prepare conda cache  # https://github.com/marketplace/actions/setup-miniconda#caching
+      uses: actions/cache@v2
+      with:
+        path: ~/conda_pkgs_dir
+        key: ${{ runner.os }}-${{ hashFiles('${{ github.workspace }}/repo/requirements.txt') }}
+
+    - name: retrieve version in RELEASE.md ('next' or version number)
+      id: set-version
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo
+      run: echo "::set-output name=build-version::$(sed -n '0,/^##/s/## //p' RELEASE.md)"
+
+    - name: if not next, set version in version.py (build will refuse next as version)
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo
+      run: |
+        if [ '${{ steps.set-version.outputs.build-version}}' != 'next' ]; then
+          printf 'version = "${{ steps.set-version.outputs.build-version }}"\n' > ./${{ inputs.package-dir-name }}/version.py
+        fi
+
+#https://github.com/pandas-dev/pandas/blob/main/.github/workflows/package-checks.yml
+#https://medium.com/@QuantStack/open-software-packaging-for-science-61cecee7fc23:
+# setup-mamba was the original CI action with mamba, now is depreciated -> setup-micromamba is the maintained action
+    - name: install micromamba
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        environment-name: build-env
+        condarc: |
+          channels:
+            - conda-forge
+        create-args: >-
+          boa
+        cache-downloads: true
+        cache-environment: true
+
+    - name: add openergy conda channel if input was provided
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: |
+        set -e
+        [ -z ${{ inputs.conda-channel-sysadmin-url }} ] || conda config --system --add channels ${{ inputs.conda-channel-sysadmin-url }}
+
+    - name: prepare build info
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo
+      run: |
+        set -e
+
+        # prepare directory
+        mkdir conda-build
+
+        # install boa to use mambabuild
+        mamba install boa -c conda-forge
+
+        # download create_meta script
+        wget https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-build-v01/create_meta.py -P ${{ github.workspace }}
+
+        # create meta
+        python ${{ github.workspace }}/create_meta.py conda-build ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
+
+    - name: build
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo/conda-build
+      run: |
+        set -e
+
+        # log (for debug)
+        conda env list
+        conda config --show channels
+
+        # build
+        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload
+
+    - name: upload build
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ inputs.build-artifact-name }}
+        path: ${{ github.workspace }}/conda-build-to-upload
+        retention-days: 1
