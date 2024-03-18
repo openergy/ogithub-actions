@@ -57,7 +57,7 @@ jobs:
     steps:
       - name: build package
         id: build-package
-        uses: openergy/ogithub-actions/actions/opypackage-conda-build-v03@master
+        uses: openergy/ogithub-actions/actions/opypackage-conda-build-v04@CC_debug_build
         with:
           python-requirement: ${{ inputs.python-conda-requirement }}
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
@@ -68,7 +68,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: test package
-        uses: openergy/ogithub-actions/actions/opypackage-conda-test-v01@master
+        uses: openergy/ogithub-actions/actions/opypackage-conda-test-v01@CC_debug_build
         with:
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           python-requirement: ${{ inputs.python-conda-requirement }}
@@ -83,28 +83,28 @@ jobs:
     if: needs.conda-build.outputs.build-version != 'next'
     steps:
       - name: version repo
-        uses: openergy/ogithub-actions/actions/opy-version-v01@master
+        uses: openergy/ogithub-actions/actions/opy-version-v01@CC_debug_build
         with:
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           build-version: ${{ needs.conda-build.outputs.build-version }}
 
-  pypi-publish:
-    needs: [ conda-build, conda-test, version ]
-    runs-on: ubuntu-latest
-    if: ${{ inputs.publish-to-pypi }}
-    steps:
-      - name: publish package to pypi
-        uses: openergy/ogithub-actions/actions/opypackage-pip-build-and-publish-v01@master
-        with:
-          admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
-          pypi-openergy-password: ${{ secrets.PYPI_OPENERGY_PASSWORD }}
-          python-requirement: ${{ inputs.python-pip-requirement }}
-
-  conda-publish:
-    needs: [ conda-build, conda-test, version ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: publish package to private conda registry
-        uses: openergy/ogithub-actions/actions/opypackage-conda-publish-v01@master
-        with:
-          azure-conda-channel-key: ${{ secrets.AZURE_CONDA_CHANNEL_KEY }}
+#  pypi-publish:
+#    needs: [ conda-build, conda-test, version ]
+#    runs-on: ubuntu-latest
+#    if: ${{ inputs.publish-to-pypi }}
+#    steps:
+#      - name: publish package to pypi
+#        uses: openergy/ogithub-actions/actions/opypackage-pip-build-and-publish-v01@master
+#        with:
+#          admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
+#          pypi-openergy-password: ${{ secrets.PYPI_OPENERGY_PASSWORD }}
+#          python-requirement: ${{ inputs.python-pip-requirement }}
+#
+#  conda-publish:
+#    needs: [ conda-build, conda-test, version ]
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: publish package to private conda registry
+#        uses: openergy/ogithub-actions/actions/opypackage-conda-publish-v01@master
+#        with:
+#          azure-conda-channel-key: ${{ secrets.AZURE_CONDA_CHANNEL_KEY }}
