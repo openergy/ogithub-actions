@@ -126,11 +126,11 @@ runs:
       run: |
         set -e
         # activate environment
-        conda activate openergy
+        micromamba activate openergy
 
         # log (for debug)
-        conda env list
-        conda config --show channels
+        micromamba env list
+        micromamba config --show channels
 
         # install
         micromamba install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
@@ -141,7 +141,7 @@ runs:
       run: |
         set -e
         # activate
-        conda activate openergy
+        micromamba activate openergy
 
         # copy tests
         cp -r ${{ github.workspace }}/repo/tests ${{ github.workspace }}
