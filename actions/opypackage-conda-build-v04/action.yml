@@ -62,10 +62,13 @@ runs:
           printf 'version = "${{ steps.set-version.outputs.build-version }}"\n' > ./${{ inputs.package-dir-name }}/version.py
         fi
 
+#https://github.com/pandas-dev/pandas/blob/main/.github/workflows/package-checks.yml
+#https://medium.com/@QuantStack/open-software-packaging-for-science-61cecee7fc23:
+# setup-mamba was the original CI action with mamba, now is depreciated -> setup-micromamba is the maintained action
     - name: install micromamba
       uses: mamba-org/setup-micromamba@v1
       with:
-        environment-name: test
+        environment-name: build-env
         condarc: |
           channels:
             - conda-forge
