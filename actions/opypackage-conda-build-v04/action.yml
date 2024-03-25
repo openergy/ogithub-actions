@@ -71,6 +71,7 @@ runs:
         environment-name: build-env
         condarc: |
           channels:
+            - anaconda
             - conda-forge
         create-args: >-
           boa
