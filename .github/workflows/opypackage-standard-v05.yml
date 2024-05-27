@@ -60,7 +60,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: ${{ inputs.os-requirements }}
+        os: ${{ fromJson(inputs.os-requirements) }}
     outputs:
       build-version: ${{ steps.build-package.outputs.build-version }}
     steps:
