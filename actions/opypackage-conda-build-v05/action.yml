@@ -152,7 +152,6 @@ runs:
       shell: pwsh
       working-directory: ${{ github.workspace }}\repo\conda-build
       run: |
-        set -e
         conda mambabuild . --croot ${{ github.workspace }}\conda-build-to-upload
 
     - name: Upload build
