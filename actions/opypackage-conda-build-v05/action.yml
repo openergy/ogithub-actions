@@ -138,7 +138,7 @@ runs:
         set -e
         conda env list
         conda config --show channels
-        if [ "${{ runner.os }}" = "Windows" ]; then
+        if [ "${{ runner.os }}" == "Windows" ]; then
           conda mambabuild . --croot ${{ github.workspace }}\\${{ runner.os }}\\conda-build-to-upload
         else
           conda mambabuild . --croot ${{ github.workspace }}/${{ runner.os }}/conda-build-to-upload
