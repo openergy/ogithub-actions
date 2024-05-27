@@ -76,6 +76,9 @@ jobs:
   conda-test:
     needs: [ conda-build ]
     runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: ${{ fromJson(inputs.os-requirements) }}
     steps:
       - name: test package
         uses: openergy/ogithub-actions/actions/opypackage-conda-test-v02@cc_opyplus
