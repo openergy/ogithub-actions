@@ -74,10 +74,9 @@ runs:
             - conda-forge
         create-args: >-
           boa
-        with:
-          init-shell: >-
-            bash
-            powershell
+        init-shell: >-
+          bash
+          powershell
         cache-downloads: true
         cache-environment: true
 
