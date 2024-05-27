@@ -83,14 +83,23 @@ runs:
 #        sudo rm ./EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
 
     - name: install EnergyPlus 22.1.0 if required
+      if: runner.os != 'Windows' && ${{ inputs.install-eplus-2210 == 'true' }}
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
-      if: ${{ inputs.install-eplus-2210 == 'true' }}
       run: |
         set -e
         wget -q https://github.com/NREL/EnergyPlus/releases/download/v22.1.0/EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
         echo "y\r" | sudo bash ./EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
         sudo rm ./EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
+
+    - name: install EnergyPlus 22.1.0 if required
+      if: runner.os == 'Windows' && ${{ inputs.install-eplus-2210 == 'true' }}
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: |
+        curl https://github.com/NREL/EnergyPlus/releases/download/v22.1.0/EnergyPlus-22.1.0-ed759b17ee-Windows-x86_64.exe -OutFile:$(Agent.TempDirectory)\eplus.exe
+        & $(Agent.TempDirectory)\eplus.exe /S | Out-Null
+        displayName: 'Install EnergyPlus on Windows'
 
     - name: create environment
       shell: bash -l {0}
