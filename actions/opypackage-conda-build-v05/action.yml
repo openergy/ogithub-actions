@@ -116,7 +116,7 @@ runs:
         wget https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-build-v01/create_meta.py -P ${{ github.workspace }}
 
         # create meta
-        python ${{ github.workspace }}/create_meta.py conda-build-${{ runner.os }} ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
+        python ${{ github.workspace }}/create_meta.py conda-build-${{ runner.os }} ${{ github.event.repository.name }} false "${{ runner.python-version }}"
 
     - name: Prepare build info (Windows)
       if: runner.os == 'Windows'
@@ -132,7 +132,7 @@ runs:
         Invoke-WebRequest -Uri https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-build-v01/create_meta.py -OutFile ${{ github.workspace }}\create_meta.py
 
         # create meta
-        python ${{ github.workspace }}\create_meta.py conda-build-${{ runner.os }} ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
+        python ${{ github.workspace }}\create_meta.py conda-build-${{ runner.os }} ${{ github.event.repository.name }} false "${{ runner.python-version }}"
 
 
 #    - name: build

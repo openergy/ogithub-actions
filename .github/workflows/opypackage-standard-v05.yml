@@ -38,6 +38,12 @@ on:
         type: string
         default: "['ubuntu-latest']"
 
+      python-requirements:
+        description: Python requirements
+        required: false
+        type: string
+        default: "['3.7']"
+
     secrets:
       # mandatory
       ADMIN_GITHUB_TOKEN:
@@ -61,6 +67,7 @@ jobs:
     strategy:
       matrix:
         os: ${{ fromJson(inputs.os-requirements) }}
+        python-version: ${{ fromJson(inputs.python-requirements) }}
     outputs:
       build-version: ${{ steps.build-package.outputs.build-version }}
     steps:
