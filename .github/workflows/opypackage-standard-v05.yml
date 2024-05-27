@@ -36,7 +36,7 @@ on:
         description: OS requirements
         required: false
         type: string
-        default: [ubuntu-latest]
+        default: "ubuntu-latest"
 
     secrets:
       # mandatory
