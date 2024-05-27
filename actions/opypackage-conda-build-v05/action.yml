@@ -37,13 +37,13 @@ runs:
   using: composite
   steps:
     - name: checkout repo # automatically on push branch
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
         token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
 
     - name: prepare conda cache  # https://github.com/marketplace/actions/setup-miniconda#caching
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/conda_pkgs_dir
         key: ${{ runner.os }}-${{ hashFiles('${{ github.workspace }}/repo/requirements.txt') }}
@@ -178,7 +178,7 @@ runs:
         retention-days: 1
 
     - name: Upload build Linux, MacOs
-      if: runner.os == 'Windows'
+      if: runner.os != 'Windows'
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.build-artifact-name }}-${{ runner.os }}
