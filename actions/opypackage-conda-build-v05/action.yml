@@ -109,6 +109,7 @@ runs:
       run: |
         set -e
         echo "python${{ inputs.python-requirement }}"
+        echo "workspace${{ github.workspace }}"
         # prepare directory
         mkdir conda-build-${{ runner.os }}
 
@@ -170,7 +171,7 @@ runs:
 
     - name: Upload build Windows
       if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.build-artifact-name }}-${{ runner.os }}
         path: ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}
@@ -178,8 +179,9 @@ runs:
 
     - name: Upload build Linux, MacOs
       if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.build-artifact-name }}-${{ runner.os }}
         path: ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}
+        if-no-files-found: error
         retention-days: 1
