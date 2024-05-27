@@ -108,7 +108,7 @@ runs:
       working-directory: ${{ github.workspace }}/repo
       run: |
         set -e
-
+        echo "python${{ runner.python-version }}"
         # prepare directory
         mkdir conda-build-${{ runner.os }}
 
@@ -159,18 +159,27 @@ runs:
         conda config --show channels
 
         # build
-        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}
+        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}-${{ runner.python-version }}
 
     - name: Build on Windows
       if: runner.os == 'Windows'
       shell: pwsh
       working-directory: ${{ github.workspace }}\repo\conda-build-${{ runner.os }}
       run: |
-        conda mambabuild . --croot ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}
+        conda mambabuild . --croot ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}-${{ runner.python-version }}
 
-    - name: Upload build
+    - name: Upload build Windows
+      if: runner.os == 'Windows'
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}
-        path: ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}
+        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-${{ runner.python-version }}
+        path: ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}-${{ runner.python-version }}
+        retention-days: 1
+
+    - name: Upload build Linux, MacOs
+      if: runner.os == 'Windows'
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-${{ runner.python-version }}
+        path: ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}-${{ runner.python-version }}
         retention-days: 1
