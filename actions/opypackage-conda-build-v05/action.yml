@@ -33,9 +33,9 @@ outputs:
     value: ${{ steps.set-version.outputs.build-version }}
 # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
 # https://github.com/marketplace/actions/setup-miniconda#important
-  python-version:
-    description: python version
-    value: ${{ steps.get-version.outputs.python-version }}
+#  python-version:
+#    description: python version
+#    value: ${{ steps.get-version.outputs.python-version }}
 runs:
   using: composite
   steps:
@@ -152,13 +152,13 @@ runs:
 #        # build
 #        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload
 
-    - name: Sanitize Python Version
-      id: get-version
-      shell: bash -l {0}
-      working-directory: ${{ github.workspace }}/repo
-      run: |
-        python-version=$(echo "${{ steps.get-version.outputs.python-version }}" | sed 's/[^0-9._-]/_/g')
-        echo "::set-output name=python-version::${python_version}"
+#    - name: Sanitize Python Version
+#      id: get-version
+#      shell: bash -l {0}
+#      working-directory: ${{ github.workspace }}/repo
+#      run: |
+#        python-version=$(echo "${{ steps.get-version.outputs.python-version }}" | sed 's/[^0-9._-]/_/g')
+#        echo "::set-output name=python-version::${python_version}"
 
 
     - name: Build on Linux, Mac OS
@@ -173,26 +173,26 @@ runs:
         conda config --show channels
 
         # build
-        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}-${{ env.SANITIZED_PYTHON_REQUIREMENT }}
+        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}
 
     - name: Build on Windows
       if: runner.os == 'Windows'
       shell: pwsh
       working-directory: ${{ github.workspace }}\repo\conda-build-${{ runner.os }}
       run: |
-        conda mambabuild . --croot ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}-${{ env.SANITIZED_PYTHON_REQUIREMENT }}
+        conda mambabuild . --croot ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}
 
     - name: Upload build Windows
       if: runner.os == 'Windows'
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}
-        path: ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}-${{ env.SANITIZED_PYTHON_REQUIREMENT }}
+        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-${{inputs.python-requirement}}
+        path: ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}
         retention-days: 1
 
     - name: Upload build Linux, MacOs
       if: runner.os != 'Windows'
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}
-        path: ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}-${{ env.SANITIZED_PYTHON_REQUIREMENT }}
+        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-${{ runner.os }}-${{inputs.python-requirement}}
+        path: ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}
