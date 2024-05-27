@@ -155,9 +155,9 @@ runs:
       shell: bash -l {0}
       run: |
         REQ=${{ inputs.python-requirement }}
-        echo REQ
+        echo $REQ
         DB_NAME="${REQ//-/_}"
-        echo DB_NAME
+        echo $DB_NAME
 
     - name: Build on Linux, Mac OS
       if: runner.os != 'Windows'
