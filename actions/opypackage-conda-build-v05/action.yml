@@ -84,7 +84,23 @@ runs:
         set -e
         [ -z ${{ inputs.conda-channel-sysadmin-url }} ] || conda config --system --add channels ${{ inputs.conda-channel-sysadmin-url }}
 
-    - name: prepare build info
+#    - name: prepare build info
+#      shell: bash -l {0}
+#      working-directory: ${{ github.workspace }}/repo
+#      run: |
+#        set -e
+#
+#        # prepare directory
+#        mkdir conda-build
+#
+#        # download create_meta script
+#        wget https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-build-v01/create_meta.py -P ${{ github.workspace }}
+#
+#        # create meta
+#        python ${{ github.workspace }}/create_meta.py conda-build ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
+
+    - name: Prepare build info (Linux and macOS)
+      if: runner.os != 'Windows'
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo
       run: |
@@ -98,6 +114,22 @@ runs:
 
         # create meta
         python ${{ github.workspace }}/create_meta.py conda-build ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
+
+    - name: Prepare build info (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      working-directory: ${{ github.workspace }}\repo
+      run: |
+        Set-PSDebug -Strict
+
+        # prepare directory
+        mkdir conda-build
+
+        # download create_meta script
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-build-v01/create_meta.py -OutFile ${{ github.workspace }}\create_meta.py
+
+        # create meta
+        python ${{ github.workspace }}\create_meta.py conda-build ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
 
     - name: build
       shell: bash -l {0}
