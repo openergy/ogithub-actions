@@ -142,11 +142,11 @@ runs:
         conda config --show channels
 
         # build
-        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload
+        conda mambabuild . --croot ${{ github.workspace }}/${{ runner.os }}/conda-build-to-upload
 
     - name: upload build
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ inputs.build-artifact-name }}
+        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}
         path: ${{ github.workspace }}/${{ runner.os }}/conda-build-to-upload
         retention-days: 1
