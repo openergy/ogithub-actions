@@ -160,21 +160,21 @@ runs:
         conda config --show channels
 
         # build
-        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}
+        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}-${{ inputs.python-requirement }}
 
     - name: Build on Windows
       if: runner.os == 'Windows'
       shell: pwsh
       working-directory: ${{ github.workspace }}\repo\conda-build-${{ runner.os }}
       run: |
-        conda mambabuild . --croot ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}
+        conda mambabuild . --croot ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}-${{ inputs.python-requirement }}
 
     - name: Upload build Windows
       if: runner.os == 'Windows'
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.build-artifact-name }}-${{ runner.os }}
-        path: ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}
+        path: ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}-${{ inputs.python-requirement }}
         retention-days: 1
 
     - name: Upload build Linux, MacOs
@@ -182,6 +182,5 @@ runs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.build-artifact-name }}-${{ runner.os }}
-        path: ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}
-        if-no-files-found: error
+        path: ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}-${{ inputs.python-requirement }}
         retention-days: 1
