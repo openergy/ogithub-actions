@@ -164,9 +164,9 @@ runs:
     - name: Build on Windows
       if: runner.os == 'Windows'
       shell: pwsh
-      working-directory: ${{ github.workspace }}\repo\conda-build
+      working-directory: ${{ github.workspace }}\repo\conda-build-${{ runner.os }}
       run: |
-        conda mambabuild . --croot ${{ github.workspace }}\conda-build-to-upload
+        conda mambabuild . --croot ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}
 
     - name: Upload build
       uses: actions/upload-artifact@v2
