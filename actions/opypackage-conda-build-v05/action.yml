@@ -148,5 +148,5 @@ runs:
       uses: actions/upload-artifact@v2
       with:
         name: ${{ inputs.build-artifact-name }}
-        path: ${{ github.workspace }}/conda-build-to-upload
+        path: ${{ github.workspace }}/${{ runner.os }}/conda-build-to-upload
         retention-days: 1
