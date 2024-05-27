@@ -147,9 +147,8 @@ runs:
 
 
     - name: Upload build
-      shell: bash -l {0}
       uses: actions/upload-artifact@v2
       with:
         name: ${{ inputs.build-artifact-name }}-${{ runner.os }}
-        path: ${{ github.workspace }}/conda-build-to-upload
+        path: conda-build-to-upload
         retention-days: 1
