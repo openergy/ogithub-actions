@@ -74,6 +74,10 @@ runs:
             - conda-forge
         create-args: >-
           boa
+        with:
+          init-shell: >-
+            bash
+            powershell
         cache-downloads: true
         cache-environment: true
 
@@ -132,23 +136,29 @@ runs:
         python ${{ github.workspace }}\create_meta.py conda-build ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
 
 
-    - name: build
-      shell: bash -l {0}
-      working-directory: ${{ github.workspace }}/repo/conda-build
+#    - name: build
+#      shell: bash -l {0}
+#      working-directory: ${{ github.workspace }}/repo/conda-build
+#      run: |
+#        set -e
+#
+#        # log (for debug)
+#        conda env list
+#        conda config --show channels
+#
+#        # build
+#        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload
+    - name: Build on Windows
+      if: runner.os == 'Windows'
+      shell: cmd
+      working-directory: ${{ github.workspace }}\repo\conda-build
       run: |
         set -e
-
-        # log (for debug)
-        conda env list
-        conda config --show channels
-
-        # build
-        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload
-
+        conda mambabuild . --croot ${{ github.workspace }}\conda-build-to-upload
 
     - name: Upload build
       uses: actions/upload-artifact@v2
       with:
         name: ${{ inputs.build-artifact-name }}-${{ runner.os }}
-        path: conda-build-to-upload
+        path: ${{ github.workspace }}\conda-build-to-upload
         retention-days: 1
