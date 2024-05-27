@@ -75,10 +75,10 @@ jobs:
 
   conda-test:
     needs: [ conda-build ]
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     steps:
       - name: test package
-        uses: openergy/ogithub-actions/actions/opypackage-conda-test-v01@cc_opyplus
+        uses: openergy/ogithub-actions/actions/opypackage-conda-test-v02@cc_opyplus
         with:
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           python-requirement: ${{ inputs.python-conda-requirement }}

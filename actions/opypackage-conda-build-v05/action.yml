@@ -147,6 +147,20 @@ runs:
 #
 #        # build
 #        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload
+    - name: Build on Linux, Mac OS
+      if: runner.os != 'Windows'
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo/conda-build
+      run: |
+        set -e
+
+        # log (for debug)
+        conda env list
+        conda config --show channels
+
+        # build
+        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload
+
     - name: Build on Windows
       if: runner.os == 'Windows'
       shell: pwsh
