@@ -152,22 +152,12 @@ runs:
 #        # build
 #        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload
 
-#    - name: Sanitize Python Version
-#      id: get-version
-#      shell: bash -l {0}
-#      working-directory: ${{ github.workspace }}/repo
-#      run: |
-#        python-version=$(echo "${{ steps.get-version.outputs.python-version }}" | sed 's/[^0-9._-]/_/g')
-#        echo "::set-output name=python-version::${python_version}"
-
-
     - name: Build on Linux, Mac OS
       if: runner.os != 'Windows'
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo/conda-build-${{ runner.os }}
       run: |
         set -e
-        echo "${{ steps.get-version.outputs.python-version }}"
         # log (for debug)
         conda env list
         conda config --show channels
@@ -194,5 +184,5 @@ runs:
       if: runner.os != 'Windows'
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-${{ runner.os }}-${{inputs.python-requirement}}
+        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-${{inputs.python-requirement}}
         path: ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}
