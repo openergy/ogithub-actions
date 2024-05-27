@@ -131,18 +131,22 @@ runs:
         # create meta
         python ${{ github.workspace }}\create_meta.py conda-build ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
 
-    - name: Build
+
+    - name: Build on Ubuntu
+      if: runner.os != 'Windows'
       shell: bash
       working-directory: ${{ github.workspace }}/repo/conda-build
       run: |
         set -e
-        conda env list
-        conda config --show channels
-        if [ "${{ runner.os }}" == "Windows" ]; then
-          conda mambabuild . --croot ${{ github.workspace }}\\${{ runner.os }}\\conda-build-to-upload
-        else
-          conda mambabuild . --croot ${{ github.workspace }}/${{ runner.os }}/conda-build-to-upload
-        fi
+        conda mambabuild . --croot ${{ github.workspace }}/Linux/conda-build-to-upload
+
+    - name: Build on Windows
+      if: runner.os == 'Windows'
+      shell: bash
+      working-directory: ${{ github.workspace }}\repo\conda-build
+      run: |
+        set -e
+        conda mambabuild . --croot ${{ github.workspace }}\Windows\conda-build-to-upload
 
     - name: Upload build
       uses: actions/upload-artifact@v2
