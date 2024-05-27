@@ -33,6 +33,9 @@ outputs:
     value: ${{ steps.set-version.outputs.build-version }}
 # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
 # https://github.com/marketplace/actions/setup-miniconda#important
+  python-version:
+    description: python version
+    value: ${{ steps.get-version.outputs.python-version }}
 runs:
   using: composite
   steps:
@@ -148,12 +151,15 @@ runs:
 #
 #        # build
 #        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload
-    - name: Sanitize Python Requirement
-      id: sanitize
+
+    - name: Sanitize Python Version
+      id: get-version
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}/repo
       run: |
-        sanitized=$(echo "${{ matrix.python-requirement }}" | tr -c '[:digit:]' '_')
-        echo "SANITIZED_PYTHON_REQUIREMENT=${sanitized}" >> $GITHUB_ENV
-      shell: bash
+        python-version=$(echo "${{ steps.get-version.outputs.python-version }}" | sed 's/[^0-9._-]/_/g')
+        echo "::set-output name=python-version::${python_version}"
+
 
     - name: Build on Linux, Mac OS
       if: runner.os != 'Windows'
@@ -161,7 +167,7 @@ runs:
       working-directory: ${{ github.workspace }}/repo/conda-build-${{ runner.os }}
       run: |
         set -e
-
+        echo "${{ steps.get-version.outputs.python-version }}"
         # log (for debug)
         conda env list
         conda config --show channels
