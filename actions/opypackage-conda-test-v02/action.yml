@@ -43,9 +43,16 @@ runs:
       if: ${{ runner.os == 'Windows' && inputs.install-eplus-2210 == 'true' }}
       shell: bash
       working-directory: ${{ github.workspace }}
+#      run: |
+#        curl https://github.com/NREL/EnergyPlus/releases/download/v9.0.1/EnergyPlus-9.0.1-bb7ca4f0da-Windows-x86_64.exe -OutFile $env:TMP\\eplus.exe
+#        & $env:TMP\\eplus.exe
       run: |
-        curl https://github.com/NREL/EnergyPlus/releases/download/v9.0.1/EnergyPlus-9.0.1-bb7ca4f0da-Windows-x86_64.exe -OutFile $env:TMP\\eplus.exe
-        & $env:TMP\\eplus.exe
+        $url = "https://github.com/NREL/EnergyPlus/releases/download/v9.0.1/EnergyPlus-9.0.1-bb7ca4f0da-Windows-x86_64.exe"
+        $output = "$env:TEMP\eplus.exe"
+        Write-Host "Downloading EnergyPlus to $output"
+        Invoke-WebRequest -Uri $url -OutFile $output
+        Write-Host "Executing EnergyPlus installer"
+        & $output /S | Out-Null
 
     - name: checkout repo  # (automatically on push branch)
       uses: actions/checkout@v2
