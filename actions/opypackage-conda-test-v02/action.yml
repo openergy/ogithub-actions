@@ -45,16 +45,13 @@ runs:
       shell: bash
       run: |
         set -e
-        TEMP_DIR=$(mktemp -d)
-        curl --output "$TEMP_DIR/eplus.exe" https://github.com/NREL/EnergyPlus/releases/download/v9.6.0/EnergyPlus-9.6.0-f420c06a69-Windows-x86_64.exe
-        echo "TEMP_DIR=$TEMP_DIR" >> $GITHUB_ENV
+        curl --output "tmp/eplus.exe" https://github.com/NREL/EnergyPlus/releases/download/v9.6.0/EnergyPlus-9.6.0-f420c06a69-Windows-x86_64.exe
 
     - name: install EnergyPlus 22.1.0 if required
       if: ${{ runner.os == 'Windows' && inputs.install-eplus-2210 == 'true' }}
       shell: pwsh
       run: |
-        $tempDir = "${{ env.TEMP_DIR }}"
-        $output = "$tempDir\eplus.exe"
+        $output = "tmp\eplus.exe"
         Write-Host "Executing EnergyPlus installer from $output"
         & $output /S | Out-Null
 
