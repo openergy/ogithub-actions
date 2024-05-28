@@ -47,6 +47,7 @@ runs:
 #        curl https://github.com/NREL/EnergyPlus/releases/download/v9.0.1/EnergyPlus-9.0.1-bb7ca4f0da-Windows-x86_64.exe -OutFile $env:TMP\\eplus.exe
 #        & $env:TMP\\eplus.exe
       run: |
+        winget install --id Microsoft.Powershell --source winget
         $url = "https://github.com/NREL/EnergyPlus/releases/download/v9.6.0/EnergyPlus-9.6.0-f420c06a69-Windows-x86_64.exe"
         $output = "$env:TEMP\eplus.exe"
         $ProgressPreference = 'SilentlyContinue'
