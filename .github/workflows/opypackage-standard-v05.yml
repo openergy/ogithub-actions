@@ -62,7 +62,7 @@ jobs:
     strategy:
       matrix:
         os: ${{ fromJson(inputs.os-requirements) }}
-        python-version: ${{ fromJson(inputs.python-requirements) }}
+        python-version: ${{ fromJson(inputs.python-versions) }}
     outputs:
       build-version: ${{ steps.build-package.outputs.build-version }}
     steps:
