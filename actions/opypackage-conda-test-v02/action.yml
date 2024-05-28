@@ -57,7 +57,7 @@ runs:
 #        & $env:TMP\\eplus.exe
       run: |
 #        $url = "https://github.com/NREL/EnergyPlus/releases/download/v9.6.0/EnergyPlus-9.6.0-f420c06a69-Windows-x86_64.exe"
-        $output = "eplus.exe"
+        $output = "${{ github.workspace }}\eplus.exe"
         Write-Host "Downloading EnergyPlus to $output"
 #        (new-object Net.WebClient).DownloadFile($url, $output)
         Write-Host "Executing EnergyPlus installer"
