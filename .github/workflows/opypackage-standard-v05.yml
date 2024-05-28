@@ -4,11 +4,6 @@ on:
   workflow_call:
     inputs:
       # optional
-      install-eplus-920:
-        description: Should I install Energy Plus 9.2.0 ?
-        required: false
-        type: boolean
-
       install-eplus-2210:
         description: Should I install Energy Plus 22.1.0 ?
         required: false
@@ -38,11 +33,11 @@ on:
         type: string
         default: "['ubuntu-latest']"
 
-      python-requirements:
-        description: Python requirements
+      python-versions:
+        description: Python versions
         required: false
         type: string
-        default: "['3.7']"
+        default: "['3.7','3.8']"
 
     secrets:
       # mandatory
@@ -75,7 +70,8 @@ jobs:
         id: build-package
         uses: openergy/ogithub-actions/actions/opypackage-conda-build-v05@cc_opyplus
         with:
-          python-requirement: ${{  matrix.python-version }}
+          python-requirement: ${{ inputs.python-conda-requirement }}
+          #python-requirement: ${{  matrix.python-version }}
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
 #          os-requirements: ${{ fromJson(inputs.os-requirements) }}
