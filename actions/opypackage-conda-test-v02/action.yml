@@ -17,6 +17,10 @@ inputs:
     description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
     required: false
     default: ">=3.7,<3.8"
+  python-version:
+    description: Python version
+    required: false
+    default: "3.7"
   install-eplus-920:
     description: Should I install Energy Plus 9.2.0 ?
     required: false
@@ -42,9 +46,9 @@ runs:
         token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
 
     - name: download build
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
-        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}
+        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-${{ inputs.python-version }}
         path: ${{ github.workspace }}/conda-build
 
     - name: prepare miniconda cache

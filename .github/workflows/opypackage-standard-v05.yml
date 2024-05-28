@@ -82,15 +82,16 @@ jobs:
     strategy:
       matrix:
         os: ${{ fromJson(inputs.os-requirements) }}
+        python-version: ${{ fromJson(inputs.python-versions) }}
     steps:
       - name: test package
         uses: openergy/ogithub-actions/actions/opypackage-conda-test-v02@cc_opyplus
         with:
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           python-requirement: ${{ inputs.python-conda-requirement }}
+          python-version: ${{  matrix.python-version }}
           build-version: ${{ needs.conda-build.outputs.build-version }}
           conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
-          install-eplus-920: ${{ inputs.install-eplus-920 }}
           install-eplus-2210: ${{ inputs.install-eplus-2210 }}
 #          os-requirements: ${{ fromJson(inputs.os-requirements) }}
 
