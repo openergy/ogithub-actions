@@ -83,7 +83,7 @@ runs:
         python-version: ${{ inputs.python-version }}
         channels: conda-forge
         auto-activate-base: true
-        activate-environment: ""
+        activate-environment: true
 
     - name: add openergy conda channel if input was provided
       shell: bash -l {0}
