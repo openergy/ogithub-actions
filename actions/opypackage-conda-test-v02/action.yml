@@ -52,7 +52,7 @@ runs:
         $ProgressPreference = 'SilentlyContinue'
         Write-Host "preference option: $ProgressPreference"
         Write-Host "Downloading EnergyPlus to $output"
-        $ProgressPreference = 'SilentlyContinue'
+        $global:ProgressPreference = 'SilentlyContinue'
         Invoke-WebRequest -Uri $url -OutFile $output
         Write-Host "Executing EnergyPlus installer"
         & $output /S | Out-Null
