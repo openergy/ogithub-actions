@@ -49,11 +49,8 @@ runs:
       run: |
         $url = "https://github.com/NREL/EnergyPlus/releases/download/v9.6.0/EnergyPlus-9.6.0-f420c06a69-Windows-x86_64.exe"
         $output = "$env:TEMP\eplus.exe"
-        $ProgressPreference = 'SilentlyContinue'
-        Write-Host "preference option: $ProgressPreference"
         Write-Host "Downloading EnergyPlus to $output"
-        $global:ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri $url -OutFile $output
+        (new-object Net.WebClient).DownloadFile($url, $output)
         Write-Host "Executing EnergyPlus installer"
         & $output /S | Out-Null
 
