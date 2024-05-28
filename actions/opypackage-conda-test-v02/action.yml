@@ -100,10 +100,16 @@ runs:
       if: ${{ runner.os == 'Windows' && inputs.install-eplus-2210 == 'true' }}
       shell: pwsh
       working-directory: ${{ github.workspace }}
+#      run: |
+#        curl https://github.com/NREL/EnergyPlus/releases/download/v22.1.0/EnergyPlus-22.1.0-ed759b17ee-Windows-x86_64.exe -OutFile:$(Agent.TempDirectory)\eplus.exe
+#        & $(Agent.TempDirectory)\eplus.exe /S | Out-Null
+#        displayName: 'Install EnergyPlus on Windows'
       run: |
-        curl https://github.com/NREL/EnergyPlus/releases/download/v22.1.0/EnergyPlus-22.1.0-ed759b17ee-Windows-x86_64.exe -OutFile:$(Agent.TempDirectory)\eplus.exe
-        & $(Agent.TempDirectory)\eplus.exe /S | Out-Null
-        displayName: 'Install EnergyPlus on Windows'
+        $tempDir = $env:RUNNER_TEMP
+        $url = "https://github.com/NREL/EnergyPlus/releases/download/v22.1.0/EnergyPlus-22.1.0-ed759b17ee-Windows-x86_64.exe"
+        $output = Join-Path $tempDir "eplus.exe"
+        Invoke-WebRequest -Uri $url -OutFile $output
+        Start-Process -FilePath $output -ArgumentList "/S" -Wait -NoNewWindow
 
     - name: create environment
       shell: bash -l {0}
