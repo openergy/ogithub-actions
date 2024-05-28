@@ -45,6 +45,7 @@ runs:
       shell: bash
       run: |
         set -e
+        mkdir tmp
         curl --output "tmp/eplus.exe" https://github.com/NREL/EnergyPlus/releases/download/v9.6.0/EnergyPlus-9.6.0-f420c06a69-Windows-x86_64.exe
 
     - name: install EnergyPlus 22.1.0 if required
