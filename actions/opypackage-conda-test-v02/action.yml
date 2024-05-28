@@ -46,8 +46,9 @@ runs:
       working-directory: ${{ github.workspace }}
       run: |
         set -e
-        curl --output eplus.exe https://github.com/NREL/EnergyPlus/releases/download/v9.6.0/EnergyPlus-9.6.0-f420c06a69-Windows-x86_64.exe
-
+        TEMP_DIR=$(mktemp -d)
+        curl --output "$TEMP_DIR/eplus.exe" https://github.com/NREL/EnergyPlus/releases/download/v9.6.0/EnergyPlus-9.6.0-f420c06a69-Windows-x86_64.exe
+        echo "TEMP_DIR=$TEMP_DIR" >> $GITHUB_ENV
     - name: install EnergyPlus 22.1.0 if required
       if: ${{ runner.os == 'Windows' && inputs.install-eplus-2210 == 'true' }}
       shell: pwsh
@@ -57,10 +58,9 @@ runs:
 #        & $env:TMP\\eplus.exe
       run: |
 #        $url = "https://github.com/NREL/EnergyPlus/releases/download/v9.6.0/EnergyPlus-9.6.0-f420c06a69-Windows-x86_64.exe"
-        $output = "${{ github.workspace }}\eplus.exe"
-        Write-Host "Downloading EnergyPlus to $output"
-#        (new-object Net.WebClient).DownloadFile($url, $output)
-        Write-Host "Executing EnergyPlus installer"
+        $tempDir = $env:TEMP_DIR
+        $output = "$tempDir\eplus.exe"
+        Write-Host "Executing EnergyPlus installer from $output"
         & $output /S | Out-Null
 
     - name: checkout repo  # (automatically on push branch)
