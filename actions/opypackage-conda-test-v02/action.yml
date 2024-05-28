@@ -44,9 +44,10 @@ runs:
       shell: pwsh
       working-directory: ${{ github.workspace }}
       run: |
-        curl https://github.com/NREL/EnergyPlus/releases/download/v22.1.0/EnergyPlus-22.1.0-ed759b17ee-Windows-x86_64.exe -OutFile:${{ github.workspace }}\eplus.exe
-        & ${{ github.workspace }}\eplus.exe /S | Out-Null
-        displayName: 'Install EnergyPlus on Windows'
+        $url = "https://github.com/NREL/EnergyPlus/releases/download/v22.1.0/EnergyPlus-22.1.0-ed759b17ee-Windows-x86_64.exe"
+        $output = Join-Path $env:GITHUB_WORKSPACE "eplus.exe"
+        Invoke-WebRequest -Uri $url -OutFile $output
+        Start-Process -FilePath $output -ArgumentList "/S" -Wait -NoNewWindow
 
 
     - name: checkout repo  # (automatically on push branch)
