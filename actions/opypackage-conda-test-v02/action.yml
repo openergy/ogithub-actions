@@ -80,6 +80,7 @@ runs:
         # https://github.com/conda-incubator/setup-miniconda/issues/182#issuecomment-1032055889
         miniconda-version: "latest"
         mamba-version: "*"
+        python-version: ${{ inputs.python-version }}
         channels: conda-forge
         auto-activate-base: true
         activate-environment: ""
@@ -131,8 +132,8 @@ runs:
       working-directory: ${{ github.workspace }}
       run: |
         set -e
-        # specify python version
-        echo "python${{ inputs.python-version }}" >> env-requirements.txt
+#        # specify python version
+#        echo "python${{ inputs.python-version }}" >> env-requirements.txt
 
         # tests requirements
         echo "pytest" >> env-requirements.txt
