@@ -183,7 +183,7 @@ runs:
       if: runner.os == 'Windows'
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-${{inputs.python-requirement}}
+        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-$(echo "${{inputs.python-requirement}}" | grep -oP '(?<=>=)[0-9]+\.[0-9]+')
         path: ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}
         retention-days: 1
 
@@ -191,5 +191,6 @@ runs:
       if: runner.os != 'Windows'
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-${{inputs.python-requirement}}
+        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-$(echo "${{inputs.python-requirement}}" | grep -oP '(?<=>=)[0-9]+\.[0-9]+')
+
         path: ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}
