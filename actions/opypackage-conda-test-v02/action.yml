@@ -44,7 +44,7 @@ runs:
       shell: pwsh
       working-directory: ${{ github.workspace }}
       run: |
-        curl https://github.com/NREL/EnergyPlus/releases/download/v22.1.0/EnergyPlus-22.1.0-ed759b17ee-Windows-x86_64.exe -OutFile:eplus.exe
+        curl https://github.com/NREL/EnergyPlus/releases/download/v22.1.0/EnergyPlus-22.1.0-ed759b17ee-Windows-x86_64.exe --output eplus.exe
         & eplus.exe /S | Out-Null
         displayName: 'Install EnergyPlus on Windows'
 
