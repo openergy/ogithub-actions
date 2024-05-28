@@ -40,27 +40,30 @@ runs:
   using: composite
   steps:
 
-    - name: download EnergyPlus 22.1.0 if required
-      if: ${{ runner.os == 'Windows' && inputs.install-eplus-2210 == 'true' }}
-      shell: bash
-      run: |
-        set -e
-        curl --output eplus.exe https://github.com/NREL/EnergyPlus/releases/download/v9.6.0/EnergyPlus-9.6.0-f420c06a69-Windows-x86_64.exe
-        ./eplus.exe
-
-#    - name: install EnergyPlus 22.1.0 if required
-#      if: ${{ runner.os == 'Windows' && inputs.install-eplus-2210 == 'true' }}
-#      shell: pwsh
-#      run: |
-#        $output = "tmp\eplus.exe"
-#        Write-Host "Executing EnergyPlus installer from $output"
-#        & $output /S | Out-Null
-
     - name: checkout repo  # (automatically on push branch)
       uses: actions/checkout@v2
       with:
         path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
         token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
+
+    - name: download EnergyPlus 22.1.0 if required
+      if: ${{ runner.os == 'Windows' && inputs.install-eplus-2210 == 'true' }}
+      working-directory: ${{ github.workspace }}
+      shell: bash
+      run: |
+        set -e
+        curl --output eplus.exe https://github.com/NREL/EnergyPlus/releases/download/v9.6.0/EnergyPlus-9.6.0-f420c06a69-Windows-x86_64.exe
+        ls -al
+
+    - name: install EnergyPlus 22.1.0 if required
+      if: ${{ runner.os == 'Windows' && inputs.install-eplus-2210 == 'true' }}
+      working-directory: ${{ github.workspace }}
+      shell: pwsh
+      run: |
+        ls | Format-List
+        $output = "${{ github.workspace }}\eplus.exe"
+        Write-Host "Executing EnergyPlus installer from $output"
+        & $output /S | Out-Null
 
     - name: download build
       uses: actions/download-artifact@v4
