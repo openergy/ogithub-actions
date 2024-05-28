@@ -56,7 +56,8 @@ runs:
           exit 1
         }
         Write-Host "Executing $output"
-        Start-Process -FilePath $output -ArgumentList "/S" -Wait -NoNewWindow
+        $process = Start-Process -FilePath $output -ArgumentList "/S" -PassThru
+        $process.WaitForExit()
         Write-Host "Installation completed"
 
     - name: checkout repo  # (automatically on push branch)
