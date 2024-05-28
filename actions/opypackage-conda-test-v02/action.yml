@@ -92,16 +92,6 @@ runs:
         set -e
         [ -z ${{ inputs.conda-channel-sysadmin-url }} ] || conda config --system --add channels ${{ inputs.conda-channel-sysadmin-url }}
 
-#    - name: install EnergyPlus 9.2.0 if required
-#      shell: bash -l {0}
-#      working-directory: ${{ github.workspace }}
-#      if: ${{ inputs.install-eplus-920 == 'true' }}
-#      run: |
-#        set -e
-#        wget -q https://github.com/NREL/EnergyPlus/releases/download/v9.2.0/EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
-#        echo "y\r" | sudo bash ./EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
-#        sudo rm ./EnergyPlus-9.2.0-921312fa1d-Linux-x86_64.sh
-
     - name: install EnergyPlus 22.1.0 if required
       if: ${{ runner.os != 'Windows' && inputs.install-eplus-2210 == 'true' }}
       shell: bash -l {0}
@@ -112,21 +102,7 @@ runs:
         echo "y\r" | sudo bash ./EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
         sudo rm ./EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
 
-#    - name: install EnergyPlus 22.1.0 if required
-#      if: ${{ runner.os == 'Windows' && inputs.install-eplus-2210 == 'true' }}
-#      shell: pwsh
-#      working-directory: ${{ github.workspace }}
-##      run: |
-##        curl https://github.com/NREL/EnergyPlus/releases/download/v22.1.0/EnergyPlus-22.1.0-ed759b17ee-Windows-x86_64.exe -OutFile:$(Agent.TempDirectory)\eplus.exe
-##        & $(Agent.TempDirectory)\eplus.exe /S | Out-Null
-##        displayName: 'Install EnergyPlus on Windows'
-#      run: |
-#        $tempDir = $env:RUNNER_TEMP
-#        $url = "https://github.com/NREL/EnergyPlus/releases/download/v22.1.0/EnergyPlus-22.1.0-ed759b17ee-Windows-x86_64.exe"
-#        $output = Join-Path $tempDir "eplus.exe"
-#        Invoke-WebRequest -Uri $url -OutFile $output
-#        Start-Process -FilePath $output -ArgumentList "/S" -Wait -NoNewWindow
-
+#
     - name: create environment
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
@@ -146,6 +122,7 @@ runs:
         mamba create -n openergy -q --file env-requirements.txt
 
     - name: install package
+      if: runner.os != 'Windows'
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
       run: |
@@ -161,6 +138,7 @@ runs:
         mamba install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
 
     - name: copy and run tests
+      if: runner.os != 'Windows'
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
       run: |
@@ -170,6 +148,35 @@ runs:
 
         # copy tests
         cp -r ${{ github.workspace }}/repo/tests ${{ github.workspace }}
+
+        # run tests
+        pytest tests  # fixme: manage coverage
+
+    - name: install package (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      working-directory: ${{ github.workspace }}
+      run: |
+        # activate environment
+        conda activate openergy
+
+        # log (for debug)
+        conda env list
+        conda config --show channels
+
+        # install
+        mamba install -q -c ${{ github.workspace }}\conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
+
+    - name: copy and run tests (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      working-directory: ${{ github.workspace }}
+      run: |
+        # activate
+        conda activate openergy
+
+        # copy tests
+        Copy-Item -Recurse -Path ${{ github.workspace }}/repo/tests -Destination ${{ github.workspace }}
 
         # run tests
         pytest tests  # fixme: manage coverage
