@@ -16,6 +16,11 @@ inputs:
     required: false
     default: ">=3.7,<3.8"
 
+  python-version:
+    description: Python Version
+    required: false
+    default: "3.7"
+
   package-dir-name:
     description: name of the package in which is version.py
     required: false
@@ -77,6 +82,7 @@ runs:
             - conda-forge
         create-args: >-
           boa
+          python=${{ inputs.python-version }}
         init-shell: >-
           bash
           powershell
@@ -111,8 +117,7 @@ runs:
       working-directory: ${{ github.workspace }}/repo
       run: |
         set -e
-        echo "python${{ inputs.python-requirement }}"
-        echo "workspace${{ github.workspace }}"
+
         # prepare directory
         mkdir conda-build-${{ runner.os }}
 
@@ -183,7 +188,7 @@ runs:
       if: runner.os == 'Windows'
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}
+        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-${{ inputs.python-version }}
         path: ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}
         retention-days: 1
 
@@ -191,6 +196,5 @@ runs:
       if: runner.os != 'Windows'
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}
-
+        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-${{ inputs.python-version }}
         path: ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}
