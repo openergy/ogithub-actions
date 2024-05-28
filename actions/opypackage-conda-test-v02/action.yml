@@ -44,8 +44,8 @@ runs:
       shell: pwsh
       working-directory: ${{ github.workspace }}
       run: |
-        curl https://github.com/NREL/EnergyPlus/releases/download/v9.0.1/EnergyPlus-9.0.1-bb7ca4f0da-Windows-x86_64.exe -OutFile:${{ github.workspace }}\eplus.exe
-        & ${{ github.workspace }}\eplus.exe /S | Out-Null
+        curl https://github.com/NREL/EnergyPlus/releases/download/v9.0.1/EnergyPlus-9.0.1-bb7ca4f0da-Windows-x86_64.exe -OutFile:eplus.exe
+        & .\eplus.exe /S | Out-Null
 
     - name: checkout repo  # (automatically on push branch)
       uses: actions/checkout@v2
