@@ -123,7 +123,7 @@ runs:
         mkdir conda-build-${{ runner.os }}
 
         # download create_meta script
-        wget https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-conda-build-v05/create_meta.py -P ${{ github.workspace }}
+        wget https://raw.githubusercontent.com/openergy/ogithub-actions/cc_opyplus/actions/opypackage-conda-build-v05/create_meta.py -P ${{ github.workspace }}
 
         # create meta
         python ${{ github.workspace }}/create_meta.py conda-build-${{ runner.os }} ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
