@@ -63,12 +63,12 @@ if __name__ == "__main__":
     # --- manage dependencies
     dependencies = ""
     # try:
-    # with open("./requirements.txt", "r") as f:
-    #     for line in f.readlines():
-    #         line = line.strip()
-    #         if line.startswith("#") or line == "":
-    #             continue
-    #         dependencies += f"    - {line}\n"
+    with open("./requirements.txt", "r") as f:
+        for line in f.readlines():
+            line = line.strip()
+            if line.startswith("#") or line == "":
+                continue
+            dependencies += f"    - {line}\n"
     # manage linux requirements
     if arch_specific == "true" and os.path.isfile("./linux_requirements.txt"):
         with open("./linux_requirements.txt", "r") as f:
