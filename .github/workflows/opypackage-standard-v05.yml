@@ -74,7 +74,6 @@ jobs:
           python-version: ${{  matrix.python-version }}
           admin-github-token: ${{ secrets.ADMIN_GITHUB_TOKEN }}
           conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
-#          os-requirements: ${{ fromJson(inputs.os-requirements) }}
 
   conda-test:
     needs: [ conda-build ]
@@ -93,7 +92,6 @@ jobs:
           build-version: ${{ needs.conda-build.outputs.build-version }}
           conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
           install-eplus-2210: ${{ inputs.install-eplus-2210 }}
-#          os-requirements: ${{ fromJson(inputs.os-requirements) }}
 
 #  version:
 #    needs: [ conda-build, conda-test ]
