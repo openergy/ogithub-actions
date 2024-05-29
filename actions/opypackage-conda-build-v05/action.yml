@@ -75,6 +75,7 @@ runs:
 # setup-mamba was the original CI action with mamba, now is depreciated -> setup-micromamba is the maintained action
     - name: install micromamba
       uses: mamba-org/setup-micromamba@v1
+      working-directory: ${{ github.workspace }}/repo
       with:
         #environment-name: build-env
         environment-file: environment.yml
