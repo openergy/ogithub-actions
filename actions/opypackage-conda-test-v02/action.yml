@@ -122,7 +122,7 @@ runs:
         cat env-requirements.txt
 
         # create environment
-        mamba create -n openergy -q python==${{ inputs.python-version }} --file env-requirements.txt
+        mamba create -n openergy -q python=${{ inputs.python-version }} --file env-requirements.txt
 
     - name: install package
       if: runner.os != 'Windows'
