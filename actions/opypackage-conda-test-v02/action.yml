@@ -112,8 +112,7 @@ runs:
       run: |
         set -e
         # specify python version
-#        echo "python==${{ inputs.python-version }}" >> env-requirements.txt
-
+        # echo "python==${{ inputs.python-version }}" >> env-requirements.txt
         # tests requirements
         echo "pytest" >> env-requirements.txt
         echo "pytest-cov" >> env-requirements.txt
