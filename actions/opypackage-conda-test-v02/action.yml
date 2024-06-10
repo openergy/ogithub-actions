@@ -83,7 +83,7 @@ runs:
         # https://github.com/conda-incubator/setup-miniconda/issues/182#issuecomment-1032055889
         miniconda-version: "latest"
         mamba-version: "*"
-        python-version: ${{ inputs.python-version }}
+#        python-version: ${{ inputs.python-version }}
         channels: conda-forge
         auto-activate-base: true
         activate-environment: true
