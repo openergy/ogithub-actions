@@ -148,6 +148,7 @@ runs:
         set -e
         # activate
         conda activate openergy
+        conda list
 
         # copy tests
         cp -r ${{ github.workspace }}/repo/tests ${{ github.workspace }}
