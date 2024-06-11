@@ -47,11 +47,7 @@ runs:
 #        curl https://github.com/NREL/EnergyPlus/releases/download/v9.0.1/EnergyPlus-9.0.1-bb7ca4f0da-Windows-x86_64.exe -OutFile $env:TMP\\eplus.exe
 #        & $env:TMP\\eplus.exe
       run: |
-        Invoke-WebRequest -Uri "https://github.com/PowerShell/PowerShell/releases/latest/download/PowerShell-7.2.0-win-x64.msi" -OutFile "$env:TEMP\PowerShell-7.2.0-win-x64.msi"
-        # Install PowerShell silently
-        Start-Process -FilePath "msiexec.exe" -ArgumentList "/i $env:TEMP\PowerShell-7.2.0-win-x64.msi /quiet" -Wait
-        # Verify PowerShell installation
-        pwsh -c "$PSVersionTable.PSVersion"
+        iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI -Quiet"
         $url = "https://github.com/NREL/EnergyPlus/releases/download/v9.6.0/EnergyPlus-9.6.0-f420c06a69-Windows-x86_64.exe"
         $output = "$env:TEMP\eplus.exe"
         $ProgressPreference = 'SilentlyContinue'
