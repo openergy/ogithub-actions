@@ -67,7 +67,7 @@ runs:
     - name: download build
       uses: actions/download-artifact@v4
       with:
-        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-${{ inputs.python-version }}
+        name: ${{ inputs.build-artifact-name }}
         path: ${{ github.workspace }}/conda-build
 
     - name: prepare miniconda cache

@@ -120,13 +120,12 @@ runs:
         set -e
 
         # prepare directory
-        mkdir conda-build-${{ runner.os }}
-
+        mkdir conda-build
         # download create_meta script
         wget https://raw.githubusercontent.com/openergy/ogithub-actions/cc_opyplus/actions/opypackage-conda-build-v05/create_meta.py -P ${{ github.workspace }}
 
         # create meta
-        python ${{ github.workspace }}/create_meta.py conda-build-${{ runner.os }} ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
+        python ${{ github.workspace }}/create_meta.py conda-build ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
 
     - name: Prepare build info (Windows)
       if: runner.os == 'Windows'
@@ -136,13 +135,13 @@ runs:
         Set-PSDebug -Strict
 
         # prepare directory
-        mkdir conda-build-${{ runner.os }}
+        mkdir conda-build
 
         # download create_meta script
         Invoke-WebRequest -Uri https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-build-v01/create_meta.py -OutFile ${{ github.workspace }}\create_meta.py
 
         # create meta
-        python ${{ github.workspace }}\create_meta.py conda-build-${{ runner.os }} ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
+        python ${{ github.workspace }}\create_meta.py conda-build ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
 
 
 #    - name: build
@@ -160,7 +159,7 @@ runs:
     - name: Build on Linux, Mac OS
       if: runner.os != 'Windows'
       shell: bash -l {0}
-      working-directory: ${{ github.workspace }}/repo/conda-build-${{ runner.os }}
+      working-directory: ${{ github.workspace }}/repo/conda-build
       run: |
         set -e
         # log (for debug)
@@ -168,26 +167,26 @@ runs:
         conda config --show channels
 
         # build
-        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}
+        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload
 
     - name: Build on Windows
       if: runner.os == 'Windows'
       shell: pwsh
-      working-directory: ${{ github.workspace }}\repo\conda-build-${{ runner.os }}
+      working-directory: ${{ github.workspace }}\repo\conda-build
       run: |
-        conda mambabuild . --croot ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}
+        conda mambabuild . --croot ${{ github.workspace }}\conda-build-to-upload
 
     - name: Upload build Windows
       if: runner.os == 'Windows'
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-${{ inputs.python-version }}
-        path: ${{ github.workspace }}\conda-build-to-upload-${{ runner.os }}
+        name: ${{ inputs.build-artifact-name }}
+        path: ${{ github.workspace }}\conda-build-to-upload
         retention-days: 1
 
     - name: Upload build Linux, MacOs
       if: runner.os != 'Windows'
       uses: actions/upload-artifact@v4
       with:
-        name: ${{ inputs.build-artifact-name }}-${{ runner.os }}-${{ inputs.python-version }}
-        path: ${{ github.workspace }}/conda-build-to-upload-${{ runner.os }}
+        name: ${{ inputs.build-artifact-name }}
+        path: ${{ github.workspace }}/conda-build-to-upload
