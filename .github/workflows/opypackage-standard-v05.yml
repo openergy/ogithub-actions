@@ -59,11 +59,11 @@ on:
 
 jobs:
   conda-build:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: ${{ fromJson(inputs.os-requirements) }}
-#        python-version: ${{ fromJson(inputs.python-versions) }}
+    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        os: ${{ fromJson(inputs.os-requirements) }}
+##        python-version: ${{ fromJson(inputs.python-versions) }}
     outputs:
       build-version: ${{ steps.build-package.outputs.build-version }}
     steps:

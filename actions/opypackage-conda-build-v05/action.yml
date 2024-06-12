@@ -97,23 +97,7 @@ runs:
         set -e
         [ -z ${{ inputs.conda-channel-sysadmin-url }} ] || conda config --system --add channels ${{ inputs.conda-channel-sysadmin-url }}
 
-#    - name: prepare build info
-#      shell: bash -l {0}
-#      working-directory: ${{ github.workspace }}/repo
-#      run: |
-#        set -e
-#
-#        # prepare directory
-#        mkdir conda-build
-#
-#        # download create_meta script
-#        wget https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-build-v01/create_meta.py -P ${{ github.workspace }}
-#
-#        # create meta
-#        python ${{ github.workspace }}/create_meta.py conda-build ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
-
-    - name: Prepare build info (Linux and macOS)
-      if: runner.os != 'Windows'
+    - name: Prepare build info
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo
       run: |
@@ -127,37 +111,7 @@ runs:
         # create meta
         python ${{ github.workspace }}/create_meta.py conda-build ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
 
-    - name: Prepare build info (Windows)
-      if: runner.os == 'Windows'
-      shell: pwsh
-      working-directory: ${{ github.workspace }}\repo
-      run: |
-        Set-PSDebug -Strict
-
-        # prepare directory
-        mkdir conda-build
-
-        # download create_meta script
-        Invoke-WebRequest -Uri https://raw.githubusercontent.com/openergy/ogithub-actions/master/actions/opypackage-build-v01/create_meta.py -OutFile ${{ github.workspace }}\create_meta.py
-
-        # create meta
-        python ${{ github.workspace }}\create_meta.py conda-build ${{ github.event.repository.name }} false "${{ inputs.python-requirement }}"
-
-
-#    - name: build
-#      shell: bash -l {0}
-#      working-directory: ${{ github.workspace }}/repo/conda-build
-#      run: |
-#        set -e
-#
-#        # log (for debug)
-#        conda env list
-#        conda config --show channels
-#
-#        # build
-#        conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload
-    - name: Build on Linux, Mac OS
-      if: runner.os != 'Windows'
+    - name: Build
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}/repo/conda-build
       run: |
@@ -169,23 +123,8 @@ runs:
         # build
         conda mambabuild . --croot ${{ github.workspace }}/conda-build-to-upload
 
-    - name: Build on Windows
-      if: runner.os == 'Windows'
-      shell: pwsh
-      working-directory: ${{ github.workspace }}\repo\conda-build
-      run: |
-        conda mambabuild . --croot ${{ github.workspace }}\conda-build-to-upload
 
-    - name: Upload build Windows
-      if: runner.os == 'Windows'
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ inputs.build-artifact-name }}
-        path: ${{ github.workspace }}\conda-build-to-upload
-        retention-days: 1
-
-    - name: Upload build Linux, MacOs
-      if: runner.os != 'Windows'
+    - name: Upload build
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.build-artifact-name }}
