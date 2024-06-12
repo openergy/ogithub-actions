@@ -1,0 +1,178 @@
+name: Test Openergy python package
+description: conda-build artifact is used as package to test
+inputs:
+  # mandatory
+  admin-github-token:
+    description: Openergy admin github token
+    required: true
+  build-version:
+    description: version that was extracted from RELEASE.md
+    required: true
+
+  # optional
+  conda-channel-sysadmin-url:
+    description: openergy conda channel (if openergy packages are needed for build)
+    required: false
+  python-requirement:
+    description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
+    required: false
+    default: ">=3.8,<3.13"
+  python-version:
+    description: Python version
+    required: false
+    default: "3.12"
+  install-eplus-920:
+    description: Should I install Energy Plus 9.2.0 ?
+    required: false
+  install-eplus-2210:
+    description: Should I install Energy Plus 22.1.0 ?
+    required: false
+
+  # config
+  build-artifact-name:
+    description: name of the artifact in which package build is stored
+    required: false
+    default: conda-build
+
+# https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
+# https://github.com/marketplace/actions/setup-miniconda#important
+runs:
+  using: composite
+  steps:
+    - name: checkout repo  # (automatically on push branch)
+      uses: actions/checkout@v2
+      with:
+        path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
+        token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
+
+    - name: download build
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{ inputs.build-artifact-name }}
+        path: ${{ github.workspace }}/conda-build
+
+    - name: prepare miniconda cache
+      uses: actions/cache@v2
+      with:
+        path: ~/conda_pkgs_dir
+        key: ${{ runner.os }}-${{ hashFiles('${{ github.workspace }}/conda-build/**') }}
+
+    - name: install miniconda
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        # bug appeared in 01/2023, seems to be caused by no miniconda-version and mamba-version: "*". Fixed by
+        # putting miniconda-version: "latest", thanks to following comment :
+        # https://github.com/conda-incubator/setup-miniconda/issues/182#issuecomment-1032055889
+        miniconda-version: "latest"
+        mamba-version: "*"
+        channels: conda-forge
+        auto-activate-base: true
+        activate-environment: true
+
+    - name: add openergy conda channel if input was provided
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: |
+        set -e
+        [ -z ${{ inputs.conda-channel-sysadmin-url }} ] || conda config --system --add channels ${{ inputs.conda-channel-sysadmin-url }}
+
+    - name: install EnergyPlus 22.1.0 if required (Ubuntu)
+      if: ${{ runner.os != 'Windows' && inputs.install-eplus-2210 == 'true' }}
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: |
+        set -e
+        wget -q https://github.com/NREL/EnergyPlus/releases/download/v22.1.0/EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
+        echo "y\r" | sudo bash ./EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
+        sudo rm ./EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
+
+    - name: install EnergyPlus 22.1.0 if required (Windows)
+      if: ${{ runner.os == 'Windows' && inputs.install-eplus-2210 == 'true' }}
+      shell: pwsh
+      working-directory: ${{ github.workspace }}
+      run: |
+        $url = "https://github.com/NREL/EnergyPlus/releases/download/v22.1.0/EnergyPlus-22.1.0-ed759b17ee-Windows-x86_64.exe"
+        $output = "$env:TEMP\eplus.exe"
+        Write-Host "PowerShell Version: $($PSVersionTable.PSVersion)"
+        $ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri $url -OutFile $output
+        Write-Host "Executing EnergyPlus installer"
+        & $output /S | Out-Null
+
+#
+    - name: create environment
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: |
+        set -e
+        echo "pytest" >> env-requirements.txt
+        echo "pytest-cov" >> env-requirements.txt
+
+        # output requirements for debug
+        cat env-requirements.txt
+
+        # create environment
+        mamba create -n openergy -q python=${{ inputs.python-version }} --file env-requirements.txt
+
+    # install and test package (Ubuntu)
+    - name: install package
+      if: runner.os != 'Windows'
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: |
+        set -e
+        # activate environment
+        conda activate openergy
+
+        # log (for debug)
+        conda env list
+        conda config --show channels
+
+        # install
+        mamba install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
+
+    - name: copy and run tests
+      if: runner.os != 'Windows'
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: |
+        set -e
+        # activate
+        conda activate openergy
+        conda list
+
+        # copy tests
+        cp -r ${{ github.workspace }}/repo/tests ${{ github.workspace }}
+
+        # run tests
+        pytest --cov=. tests/
+
+    # install and test package (Windows)
+    - name: install package (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      working-directory: ${{ github.workspace }}
+      run: |
+        # activate environment
+        conda activate openergy
+
+        # log (for debug)
+        conda env list
+        conda config --show channels
+
+        # install
+        mamba install -q -c ${{ github.workspace }}\conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
+
+    - name: copy and run tests (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      working-directory: ${{ github.workspace }}
+      run: |
+        # activate
+        conda activate openergy
+
+        # copy tests
+        Copy-Item -Recurse -Path ${{ github.workspace }}/repo/tests -Destination ${{ github.workspace }}
+
+        # run tests
+        pytest --cov=. tests/
