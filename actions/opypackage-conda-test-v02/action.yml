@@ -180,4 +180,6 @@ runs:
         Copy-Item -Recurse -Path ${{ github.workspace }}/repo/tests -Destination ${{ github.workspace }}
 
         # run tests
-        pytest tests  # fixme: manage coverage
+        pytest tests -rfEsXR -n auto \
+            --maxfail=50 --timeout=300 --durations=25 \
+            --cov-report=xml --cov=lib --log-level=DEBUG --color=yes
