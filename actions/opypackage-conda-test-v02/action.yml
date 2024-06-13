@@ -16,7 +16,7 @@ inputs:
   python-requirement:
     description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
     required: false
-    default: ">=3.8,<3.13"
+    default: ">=3.8"
   python-version:
     description: Python version
     required: false
@@ -89,6 +89,8 @@ runs:
         echo "y\r" | sudo bash ./EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
         sudo rm ./EnergyPlus-22.1.0-ed759b17ee-Linux-Ubuntu18.04-x86_64.sh
 
+    # fixme: powershell install of energyplus not working with latest versions
+    # this step was used for opyplus automatic testing under windows, but was dropped because of this issue
     - name: install EnergyPlus 22.1.0 if required (Windows)
       if: ${{ runner.os == 'Windows' && inputs.install-eplus-2210 == 'true' }}
       shell: pwsh
@@ -181,17 +183,18 @@ runs:
         pytest --cov=. tests/
 
 
-    - name: build and test doc
+    - name: testing doc examples and testing build  html
       if: ${{ inputs.make-doctest == 'true' }}
       shell: bash
       working-directory: ${{ github.workspace }}
       run: |
+        # testing only, a doc build is triggered by readthedocs if versioned (see admin settings)
         set -e
         conda activate openergy
         pip install -r ${{ github.workspace }}/repo/docs/requirements.txt
         cd ${{ github.workspace }}/repo/docs
-        make html
         make doctest
+        make html
         
 
 

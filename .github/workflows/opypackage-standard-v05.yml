@@ -13,13 +13,13 @@ on:
         description: Specific python requirement to install with conda (for example "=3.7.0" or ">=3.7,<3.8") ?
         required: false
         type: string
-        default: ">=3.8,<3.13"
+        default: ">=3.8"
 
       python-pip-requirement:
         description: Specific python requirement to install with pip (for example "=3.7.0" or ">=3.7,<3.8") ?
         required: false
         type: string
-        default: ">=3.8,<3.13"
+        default: ">=3.8"
 
       publish-to-pypi:
         description: Should I publish to Pypi ? (! only for public packages !)
@@ -40,7 +40,7 @@ on:
         type: string
         default: "['ubuntu-latest']"
 
-      python-versions:
+      python-test-versions:
         description: Python versions to be tested
         required: false
         type: string
@@ -83,7 +83,7 @@ jobs:
     strategy:
       matrix:
         os: ${{ fromJson(inputs.os-requirements) }}
-        python-version: ${{ fromJson(inputs.python-versions) }}
+        python-version: ${{ fromJson(inputs.python-test-versions) }}
     steps:
       - name: test package
         uses: openergy/ogithub-actions/actions/opypackage-conda-test-v02@master
