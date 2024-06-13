@@ -183,7 +183,7 @@ runs:
 
     - name: build and test doc
       if: ${{ inputs.make-doctest == 'true' }}
-      shell: bash
+      shell: bash -l {0}
       working-directory: ${{ github.workspace }}
       run: |
         set -e
