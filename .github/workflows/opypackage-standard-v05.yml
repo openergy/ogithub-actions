@@ -27,6 +27,12 @@ on:
         type: boolean
         default: false
 
+      make-doctest:
+        description: Should I run Sphinx documentation tests?
+        required: false
+        type: boolean
+        default: false
+
       # tests can be executed on different os (ubuntu, linux, macos), different python versions
       os-requirements:
         description: OS requirements
@@ -88,6 +94,7 @@ jobs:
           build-version: ${{ needs.conda-build.outputs.build-version }}
           conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
           install-eplus-2210: ${{ inputs.install-eplus-2210 }}
+          make-doctest: ${{ inputs.make-doctest}}
 
   version:
     needs: [ conda-build, conda-test ]

@@ -27,6 +27,9 @@ inputs:
   install-eplus-2210:
     description: Should I install Energy Plus 22.1.0 ?
     required: false
+  make-doctest:
+    description: Should I run Sphinx doctest ?
+    required: false
 
   # config
   build-artifact-name:
@@ -99,7 +102,7 @@ runs:
         Write-Host "Executing EnergyPlus installer"
         & $output /S | Out-Null
 
-#
+    #
     - name: create environment
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
@@ -176,3 +179,19 @@ runs:
 
         # run tests
         pytest --cov=. tests/
+
+
+    - name: build and test doc
+      if: ${{ inputs.make-doctest == 'true' }}
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      run: |
+        set -e
+        conda activate openergy
+        pip install -r ${{ github.workspace }}/repo/docs/requirements.txt
+        cd ${{ github.workspace }}/repo/docs
+        make html
+        make doctest
+        
+
+
