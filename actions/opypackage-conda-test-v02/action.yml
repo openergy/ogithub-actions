@@ -187,6 +187,7 @@ runs:
       working-directory: ${{ github.workspace }}
       run: |
         set -e
+        conda activate openergy
         pip install -r ${{ github.workspace }}/repo/docs/requirements.txt
         cd ${{ github.workspace }}/repo/docs
         make html
