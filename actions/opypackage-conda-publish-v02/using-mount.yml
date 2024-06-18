@@ -1,0 +1,78 @@
+# -------------------------------------------------------------------------------------------------------------------- #
+# --- same action using mount (does not work very well, but the following code could be useful in another context) --- #
+# -------------------------------------------------------------------------------------------------------------------- #
+name: Publish conda build on Openergy conda channel
+description: build is uploaded from conda-build artifact
+inputs:
+  # mandatory
+  azure-conda-channel-key:
+    description: Azure conda channel key
+    required: true
+
+  # config
+  build-artifact-name:
+    description: name of the artifact in which build will be stored
+    required: false
+    default: conda-build
+
+# -------------------------------------------------------------------------------------------------------------------- #
+# ------------------------------------------ !!!! MUST RUN ON ubuntu-20.04 !!! --------------------------------------- #
+# -------------------------------------------------------------------------------------------------------------------- #
+
+# https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
+# https://github.com/marketplace/actions/setup-miniconda#important
+runs:
+  using: composite
+  steps:
+    - name: "prepare ubuntu"
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: |
+        set -e
+        sudo apt-get update && sudo apt-get install -y curl software-properties-common libcurl3-gnutls
+    - name: "install blobfuse"
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: |
+        set -e
+        # https://docs.microsoft.com/en-us/windows-server/administration/Linux-Package-Repository-for-Microsoft-Software#ubuntu
+        curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo tee /etc/apt/trusted.gpg.d/microsoft.asc
+        sudo apt-add-repository https://packages.microsoft.com/ubuntu/20.04/prod
+        sudo apt-get update
+        # https://docs.microsoft.com/en-us/azure/storage/blobs/storage-how-to-mount-container-linux
+        sudo apt-get install -y blobfuse
+    - name: "configure blobfuse"
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: |
+        set -e
+        # tmp dir
+        mkdir ${{ github.workspace }}/blobfusetmp -p
+        # connection info
+        cat > ${{ github.workspace }}/fuse_connection.cfg <<EOL
+        accountName condachannel
+        accountKey ${{ inputs.azure-conda-channel-key }}
+        containerName static
+        EOL
+        # local conda-build work directory
+        mkdir /${{ github.workspace }}/conda-build
+        # mount directory
+        blobfuse /${{ github.workspace }}/conda-build --tmp-path=${{ github.workspace }}/blobfusetmp --config-file=/${{ github.workspace }}/fuse_connection.cfg -o attr_timeout=240 -o entry_timeout=240 -o negative_timeout=120
+    - name: "install miniconda with conda-build"
+      uses: conda-incubator/setup-miniconda@v2
+      with:
+        channels: conda-forge
+        conda-build-version: "*"
+        auto-activate-base: true
+        activate-environment: ""
+
+    - name: "add new version build"
+      uses: actions/download-artifact@v4
+      with:
+        name: conda-build
+        path: ${{ github.workspace }}/conda-build
+
+    - name: "update index"
+      shell: bash -l {0}
+      working-directory: ${{ github.workspace }}
+      run: conda index conda-build
