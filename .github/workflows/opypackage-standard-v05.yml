@@ -27,8 +27,9 @@ on:
         type: boolean
         default: false
 
-      make-doctest:
-        description: Should I run Sphinx documentation tests?
+      # documentation testing only, a doc build is triggered by readthedocs when pushed on master
+      check-documentation:
+        description: Should I check that documentation generates correctly?
         required: false
         type: boolean
         default: false
@@ -94,7 +95,7 @@ jobs:
           build-version: ${{ needs.conda-build.outputs.build-version }}
           conda-channel-sysadmin-url: ${{ secrets.CONDA_CHANNEL_SYSADMIN_URL }}
           install-eplus-2210: ${{ inputs.install-eplus-2210 }}
-          make-doctest: ${{ inputs.make-doctest}}
+          check-documentation: ${{ inputs.check-documentation}}
 
   version:
     needs: [ conda-build, conda-test ]

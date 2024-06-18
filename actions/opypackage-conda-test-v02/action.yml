@@ -27,7 +27,7 @@ inputs:
   install-eplus-2210:
     description: Should I install Energy Plus 22.1.0 ?
     required: false
-  make-doctest:
+  check-documentation:
     description: Should I run Sphinx doctest ?
     required: false
 
@@ -184,11 +184,11 @@ runs:
 
 
     - name: testing doc examples and testing build  html
-      if: ${{ inputs.make-doctest == 'true' }}
+      if: ${{ inputs.check-documentation == 'true' }}
       shell: bash
       working-directory: ${{ github.workspace }}
       run: |
-        # testing only, a doc build is triggered by readthedocs if versioned (see admin settings)
+        # testing only, a doc build is triggered by readthedocs when pushed on master
         set -e
         conda activate openergy
         pip install -r ${{ github.workspace }}/repo/docs/requirements.txt
