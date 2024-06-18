@@ -185,7 +185,7 @@ runs:
 
     - name: testing doc examples and testing build  html
       if: ${{ inputs.check-documentation == 'true' }}
-      shell: bash
+      shell: bash -l {0}
       working-directory: ${{ github.workspace }}
       run: |
         # testing only, a doc build is triggered by readthedocs when pushed on master
