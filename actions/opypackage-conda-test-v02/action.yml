@@ -120,7 +120,7 @@ runs:
         mamba create -n openergy -q python=${{ inputs.python-version }} --file env-requirements.txt
 
     # install and test package (Ubuntu)
-    - name: install package
+    - name: install package (Ubuntu)
       if: runner.os != 'Windows'
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
@@ -136,7 +136,7 @@ runs:
         # install
         mamba install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
 
-    - name: copy and run tests
+    - name: copy and run tests (Ubuntu)
       if: runner.os != 'Windows'
       shell: bash -l {0}
       working-directory: ${{ github.workspace }}
