@@ -44,3 +44,4 @@ runs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         packages_dir: ${{ github.workspace }}/repo/dist
+        repository-url: https://pypi.org/p/${{ github.event.repository.name }}
