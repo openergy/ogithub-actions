@@ -125,6 +125,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: publish package to private conda registry
-        uses: openergy/ogithub-actions/actions/opypackage-conda-publish-v01@master
+        uses: openergy/ogithub-actions/actions/opypackage-conda-publish-v02@master
         with:
           azure-conda-channel-key: ${{ secrets.AZURE_CONDA_CHANNEL_KEY }}
