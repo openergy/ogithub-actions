@@ -111,6 +111,8 @@ jobs:
   pypi-publish:
     needs: [ conda-build, conda-test, version ]
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     if: ${{ inputs.publish-to-pypi }}
     steps:
       - name: publish package to pypi
