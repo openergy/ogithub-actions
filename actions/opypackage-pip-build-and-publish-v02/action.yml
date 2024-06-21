@@ -40,13 +40,9 @@ runs:
       working-directory: ${{ github.workspace }}/repo
       run: python -m build --sdist --wheel --outdir dist/
 
-    - name: Upload release to PyPI
-      permissions:
-        id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
-      steps:
-      - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          user: openergy
-          password: ${{ inputs.pypi-openergy-password }}
-          packages_dir: ${{ github.workspace }}/repo/dist
+    - name: Publish package distributions to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        user: openergy
+        password: ${{ inputs.pypi-openergy-password }}
+        packages_dir: ${{ github.workspace }}/repo/dist
