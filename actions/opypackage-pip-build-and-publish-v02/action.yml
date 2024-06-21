@@ -44,5 +44,3 @@ runs:
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: openergy
-        password: ${{ inputs.pypi-openergy-password }}
-        packages_dir: ${{ github.workspace }}/repo/dist
