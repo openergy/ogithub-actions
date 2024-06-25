@@ -60,8 +60,8 @@ on:
       CONDA_CHANNEL_SYSADMIN_URL:
         description: URL containing sysadmin password to use Openergy's private conda channel.
         required: false
-      PYPI_OPENERGY_PASSWORD:
-        description: openergy's pypi account password (only if publish to pypi)
+      PYPI_API_TOKEN:
+        description: openergy's pypi api token (only if publish to pypi)
         required: false
 
 jobs:
@@ -111,8 +111,6 @@ jobs:
   pypi-publish:
     needs: [ conda-build, conda-test, version ]
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     if: ${{ inputs.publish-to-pypi }}
     steps:
       - name: publish package to pypi
