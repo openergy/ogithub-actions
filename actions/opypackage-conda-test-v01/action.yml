@@ -109,6 +109,7 @@ runs:
 
         # create environment
         mamba create -n openergy -q --file env-requirements.txt
+        conda list 
 
     - name: install package
       shell: bash -l {0}
