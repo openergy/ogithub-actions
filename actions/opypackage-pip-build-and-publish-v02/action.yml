@@ -8,6 +8,9 @@ inputs:
   pypi-openergy-token:
     description: token of openergy's pypi account
     required: true
+  build-version:
+    description: version that was extracted from RELEASE.md
+    required: true
 
   # optional
   python-requirement:
@@ -24,6 +27,7 @@ runs:
       with:
         path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
         fetch-depth: 0  # must fetch all or merges will fail
+        ref: ${{ inputs.build-version }}
         token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
 
     - name: setup python
