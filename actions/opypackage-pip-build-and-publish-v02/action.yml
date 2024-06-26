@@ -23,6 +23,7 @@ runs:
       uses: actions/checkout@v4
       with:
         path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
+        fetch-depth: 0  # must fetch all or merges will fail
         token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
 
     - name: setup python
