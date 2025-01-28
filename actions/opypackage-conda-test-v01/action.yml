@@ -48,7 +48,7 @@ runs:
         path: ${{ github.workspace }}/conda-build
 
     - name: prepare miniconda cache
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/conda_pkgs_dir
         key: ${{ runner.os }}-${{ hashFiles('${{ github.workspace }}/conda-build/**') }}

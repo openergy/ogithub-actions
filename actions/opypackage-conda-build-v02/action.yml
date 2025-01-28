@@ -38,7 +38,7 @@ runs:
         token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
 
     - name: prepare conda cache  # https://github.com/marketplace/actions/setup-miniconda#caching
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/conda_pkgs_dir
         key: ${{ runner.os }}-${{ hashFiles('${{ github.workspace }}/repo/requirements.txt') }}
