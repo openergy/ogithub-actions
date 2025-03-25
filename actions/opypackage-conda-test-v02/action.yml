@@ -117,7 +117,7 @@ runs:
         cat env-requirements.txt
 
         # create environment
-        mamba create -n openergy -q python=${{ inputs.python-version }} --file env-requirements.txt
+        conda create -n openergy -q python=${{ inputs.python-version }} --file env-requirements.txt
 
     # install and test package (Ubuntu)
     - name: install package (Ubuntu)
@@ -134,7 +134,7 @@ runs:
         conda config --show channels
 
         # install
-        mamba install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
+        conda install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
 
     - name: copy and run tests (Ubuntu)
       if: runner.os != 'Windows'
@@ -166,7 +166,7 @@ runs:
         conda config --show channels
 
         # install
-        mamba install -q -c ${{ github.workspace }}\conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
+        conda install -q -c ${{ github.workspace }}\conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
 
     - name: copy and run tests (Windows)
       if: runner.os == 'Windows'
