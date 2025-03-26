@@ -5,12 +5,14 @@ inputs:
   azure-conda-channel-key:
     description: Azure conda channel key
     required: true
+    deprecationMessage: opypackage-conda-publish-v01 is deprecated, use opypackage-conda-build-v02 instead
 
   # config
   build-artifact-name:
     description: name of the artifact in which build will be stored
     required: false
     default: conda-build
+    deprecationMessage: opypackage-conda-publish-v01 is deprecated, use opypackage-conda-build-v02 instead
 
 # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
 # https://github.com/marketplace/actions/setup-miniconda#important

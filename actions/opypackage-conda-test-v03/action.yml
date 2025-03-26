@@ -5,57 +5,48 @@ inputs:
   admin-github-token:
     description: Openergy admin github token
     required: true
-    deprecationMessage: opypackage-conda-test-v02 is deprecated, use opypackage-conda-test-v03 instead
   build-version:
     description: version that was extracted from RELEASE.md
     required: true
-    deprecationMessage: opypackage-conda-test-v02 is deprecated, use opypackage-conda-test-v03 instead
 
   # optional
   conda-channel-sysadmin-url:
     description: openergy conda channel (if openergy packages are needed for build)
     required: false
-    deprecationMessage: opypackage-conda-test-v02 is deprecated, use opypackage-conda-test-v03 instead
   python-requirement:
     description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
     required: false
     default: ">=3.8"
-    deprecationMessage: opypackage-conda-test-v02 is deprecated, use opypackage-conda-test-v03 instead
   python-version:
     description: Python version
     required: false
     default: "3.12"
-    deprecationMessage: opypackage-conda-test-v02 is deprecated, use opypackage-conda-test-v03 instead
   install-eplus-920:
     description: Should I install Energy Plus 9.2.0 ?
     required: false
-    deprecationMessage: opypackage-conda-test-v02 is deprecated, use opypackage-conda-test-v03 instead
   install-eplus-2210:
     description: Should I install Energy Plus 22.1.0 ?
     required: false
-    deprecationMessage: opypackage-conda-test-v02 is deprecated, use opypackage-conda-test-v03 instead
   check-documentation:
     description: Should I run Sphinx doctest ?
     required: false
-    deprecationMessage: opypackage-conda-test-v02 is deprecated, use opypackage-conda-test-v03 instead
 
   # config
   build-artifact-name:
     description: name of the artifact in which package build is stored
     required: false
     default: conda-build
-    deprecationMessage: opypackage-conda-test-v02 is deprecated, use opypackage-conda-test-v03 instead
 
 # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
 # https://github.com/marketplace/actions/setup-miniconda#important
 runs:
   using: composite
   steps:
-    - name: checkout repo  # (automatically on push branch)
+    - name: checkout repo # (automatically on push branch)
       uses: actions/checkout@v2
       with:
-        path: repo  # Relative path under $GITHUB_WORKSPACE to place the repository
-        token: ${{ inputs.admin-github-token }}  # we want push to be done by Openergy Admin, for branch protection
+        path: repo # Relative path under $GITHUB_WORKSPACE to place the repository
+        token: ${{ inputs.admin-github-token }} # we want push to be done by Openergy Admin, for branch protection
 
     - name: download build
       uses: actions/download-artifact@v4
@@ -126,7 +117,7 @@ runs:
         cat env-requirements.txt
 
         # create environment
-        mamba create -n openergy -q python=${{ inputs.python-version }} --file env-requirements.txt
+        conda create -n openergy -q python=${{ inputs.python-version }} --file env-requirements.txt
 
     # install and test package (Ubuntu)
     - name: install package (Ubuntu)
@@ -143,7 +134,7 @@ runs:
         conda config --show channels
 
         # install
-        mamba install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
+        conda install -q -c ${{ github.workspace }}/conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
 
     - name: copy and run tests (Ubuntu)
       if: runner.os != 'Windows'
@@ -175,7 +166,7 @@ runs:
         conda config --show channels
 
         # install
-        mamba install -q -c ${{ github.workspace }}\conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
+        conda install -q -c ${{ github.workspace }}\conda-build ${{ github.event.repository.name }}=${{ inputs.build-version }}
 
     - name: copy and run tests (Windows)
       if: runner.os == 'Windows'
@@ -191,7 +182,6 @@ runs:
         # run tests
         pytest --cov=. tests/
 
-
     - name: testing doc examples and testing build  html
       if: ${{ inputs.check-documentation == 'true' }}
       shell: bash -l {0}
@@ -204,6 +194,3 @@ runs:
         cd ${{ github.workspace }}/repo/docs
         make doctest
         make html
-        
-
-
