@@ -5,30 +5,37 @@ inputs:
   admin-github-token:
     description: Openergy admin github token
     required: true
+    deprecationMessage: opypackage-conda-test-v01 is deprecated, use opypackage-conda-test-v02 instead
   build-version:
     description: version that was extracted from RELEASE.md
     required: true
+    deprecationMessage: opypackage-conda-test-v01 is deprecated, use opypackage-conda-test-v02 instead
 
   # optional
   conda-channel-sysadmin-url:
     description: openergy conda channel (if openergy packages are needed for build)
     required: false
+    deprecationMessage: opypackage-conda-test-v01 is deprecated, use opypackage-conda-test-v02 instead
   python-requirement:
     description: Specific python requirement to install (for example "=3.7.0" or ">=3.7,<3.8") ?
     required: false
     default: ">=3.7,<3.8"
+    deprecationMessage: opypackage-conda-test-v01 is deprecated, use opypackage-conda-test-v02 instead
   install-eplus-920:
     description: Should I install Energy Plus 9.2.0 ?
     required: false
+    deprecationMessage: opypackage-conda-test-v01 is deprecated, use opypackage-conda-test-v02 instead
   install-eplus-2210:
     description: Should I install Energy Plus 22.1.0 ?
     required: false
+    deprecationMessage: opypackage-conda-test-v01 is deprecated, use opypackage-conda-test-v02 instead
 
   # config
   build-artifact-name:
     description: name of the artifact in which package build is stored
     required: false
     default: conda-build
+    deprecationMessage: opypackage-conda-test-v01 is deprecated, use opypackage-conda-test-v02 instead
 
 # https://github.com/marketplace/actions/setup-miniconda#use-a-default-shell
 # https://github.com/marketplace/actions/setup-miniconda#important
